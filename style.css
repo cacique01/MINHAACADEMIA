@@ -298,6 +298,48 @@ main {
   color: var(--black);
   border-color: var(--orange);
 }
+.tab-pill-wrap {
+  position: relative;
+  flex: 1;
+  display: flex;
+}
+.tab-pill-wrap .tab-pill {
+  width: 100%;
+}
+.tab-del {
+  position: absolute;
+  top: -7px;
+  right: -7px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #ff6a6a;
+  border: 2px solid var(--black);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+.tab-del svg {
+  width: 10px;
+  height: 10px;
+  stroke: var(--black);
+}
+.tab-add {
+  flex: 0 0 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px;
+  background: var(--card);
+  border: 1.5px dashed var(--gray-line);
+  color: var(--gray);
+  cursor: pointer;
+}
+.tab-add svg {
+  width: 18px;
+  height: 18px;
+}
 
 .exercise-card {
   background: var(--card);

@@ -92,6 +92,7 @@ function loadState() {
   if (!s.pretreino)
     s.pretreino = JSON.parse(JSON.stringify(DEFAULT_PRETREINO_ITEMS));
   if (!s.trainDows) s.trainDows = [1, 3, 5]; // Seg, Qua, Sex
+  if (!s.workoutOrder) s.workoutOrder = Object.keys(s.workouts).sort();
   return s;
 }
 function generateId() {
@@ -173,6 +174,7 @@ function toggleManageMode(scope) {
     document
       .getElementById("workout-manage-btn")
       .classList.toggle("active", manageModeWorkout);
+    renderTabs();
     renderExerciseList();
   }
 }
@@ -299,7 +301,7 @@ function renderWeekGrid() {
   monday.setDate(today.getDate() + mondayOffset);
 
   const nextTag = getNextWorkoutTag();
-  // Assign A/B alternating across the user's chosen training days for the week
+  // Assign workout tags cycling through state.workoutOrder across the user's chosen training days
   const trainDows = state.trainDows.slice().sort();
   let tag = nextTag;
   const tagsForWeek = {};
@@ -309,7 +311,7 @@ function renderWeekGrid() {
     const dow = d.getDay();
     if (trainDows.includes(dow)) {
       tagsForWeek[i] = tag;
-      tag = tag === "A" ? "B" : "A";
+      tag = nextInOrder(tag);
     }
   }
   for (let i = 0; i < 7; i++) {
@@ -320,24 +322,101 @@ function renderWeekGrid() {
     const el = document.createElement("div");
     el.className =
       "week-day" +
-      (dayTag ? " " + dayTag.toLowerCase() : "") +
+      (dayTag ? " " + tagParityClass(dayTag) : "") +
       (isToday ? " today" : "");
     el.innerHTML = `<div class="dow">${WEEKDAYS[d.getDay()]}</div><div class="tag">${dayTag ? dayTag : "—"}</div>`;
     grid.appendChild(el);
   }
 }
 
-// ---------- Workout tab ----------
+// ---------- Workout tabs (dynamic) ----------
 let activeWorkoutTag = "A";
+function nextInOrder(tag) {
+  const order = state.workoutOrder;
+  const idx = order.indexOf(tag);
+  if (idx === -1) return order[0];
+  return order[(idx + 1) % order.length];
+}
+function tagParityClass(tag) {
+  const idx = state.workoutOrder.indexOf(tag);
+  return idx % 2 === 0 ? "a" : "b";
+}
 function getNextWorkoutTag() {
-  if (!state.lastWorkout) return "A";
-  return state.lastWorkout === "A" ? "B" : "A";
+  if (!state.lastWorkout || !state.workoutOrder.includes(state.lastWorkout))
+    return state.workoutOrder[0];
+  return nextInOrder(state.lastWorkout);
+}
+function nextWorkoutLetter() {
+  const alphabet = "ABCDEFGHIJ";
+  for (const letter of alphabet) {
+    if (!state.workoutOrder.includes(letter)) return letter;
+  }
+  return "W" + (state.workoutOrder.length + 1);
+}
+function renderTabs() {
+  const row = document.getElementById("tabs-row");
+  row.innerHTML = "";
+  state.workoutOrder.forEach((tag) => {
+    const wrap = document.createElement("div");
+    wrap.className = "tab-pill-wrap";
+    const pill = document.createElement("div");
+    pill.className = "tab-pill" + (tag === activeWorkoutTag ? " active" : "");
+    pill.dataset.workout = tag;
+    pill.textContent = "Treino " + tag;
+    pill.onclick = () => setWorkoutTab(tag);
+    wrap.appendChild(pill);
+    if (manageModeWorkout && state.workoutOrder.length > 1) {
+      const del = document.createElement("div");
+      del.className = "tab-del";
+      del.innerHTML =
+        '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>';
+      del.onclick = (ev) => {
+        ev.stopPropagation();
+        confirmDeleteWorkoutTag(tag);
+      };
+      wrap.appendChild(del);
+    }
+    row.appendChild(wrap);
+  });
+  if (manageModeWorkout) {
+    const addBtn = document.createElement("div");
+    addBtn.className = "tab-add";
+    addBtn.innerHTML =
+      '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>';
+    addBtn.onclick = addWorkoutTag;
+    row.appendChild(addBtn);
+  }
+}
+function addWorkoutTag() {
+  const letter = nextWorkoutLetter();
+  state.workouts[letter] = [];
+  state.workoutOrder.push(letter);
+  saveState();
+  activeWorkoutTag = letter;
+  renderTabs();
+  renderExerciseList();
+  showToast("Treino " + letter + " criado — adicione as atividades");
+}
+function confirmDeleteWorkoutTag(tag) {
+  if (state.workoutOrder.length <= 1) {
+    showToast("Mantenha pelo menos um treino");
+    return;
+  }
+  delete state.workouts[tag];
+  state.workoutOrder = state.workoutOrder.filter((t) => t !== tag);
+  if (activeWorkoutTag === tag) activeWorkoutTag = state.workoutOrder[0];
+  if (state.lastWorkout === tag) state.lastWorkout = null;
+  saveState();
+  renderTabs();
+  renderExerciseList();
+  updateHeroCard();
+  renderWeekGrid();
+  renderProgressSelect();
+  showToast("Treino " + tag + " removido");
 }
 function setWorkoutTab(tag) {
   activeWorkoutTag = tag;
-  document
-    .querySelectorAll(".tab-pill")
-    .forEach((t) => t.classList.toggle("active", t.dataset.workout === tag));
+  renderTabs();
   renderExerciseList();
 }
 function getLastLoad(exId) {
@@ -403,10 +482,12 @@ function renderExerciseList() {
   }
 }
 function confirmDeleteExercise(id) {
-  state.workouts.A = state.workouts.A.filter((e) => e.id !== id);
-  state.workouts.B = state.workouts.B.filter((e) => e.id !== id);
+  state.workoutOrder.forEach((tag) => {
+    state.workouts[tag] = state.workouts[tag].filter((e) => e.id !== id);
+  });
   saveState();
   renderExerciseList();
+  updateHeroCard();
   renderProgressSelect();
   showToast("Atividade removida");
 }
@@ -454,26 +535,27 @@ function finishWorkout() {
 }
 
 // ---------- Home ----------
-function renderHome() {
+function updateHeroCard() {
   const nextTag = getNextWorkoutTag();
   document.getElementById("home-workout-title").innerHTML =
     'TREINO <span class="accent">' + nextTag + "</span>";
-  const count = state.workouts[nextTag].length;
+  const count = (state.workouts[nextTag] || []).length;
   document.getElementById("home-workout-sub").textContent =
     "Full body · " + count + " exercícios · foco em força e hipertrofia";
-  activeWorkoutTag = nextTag;
-  document
-    .querySelectorAll(".tab-pill")
-    .forEach((t) =>
-      t.classList.toggle("active", t.dataset.workout === nextTag),
-    );
+}
+function renderHome() {
+  updateHeroCard();
+  activeWorkoutTag = getNextWorkoutTag();
+  renderTabs();
   renderExerciseList();
 }
 
 // ---------- Progress ----------
 function renderProgressSelect() {
   const sel = document.getElementById("progress-exercise-select");
-  const allExercises = [...state.workouts.A, ...state.workouts.B];
+  const allExercises = state.workoutOrder.flatMap(
+    (tag) => state.workouts[tag] || [],
+  );
   const prevVal = sel.value;
   sel.innerHTML = "";
   allExercises.forEach((ex) => {
@@ -701,7 +783,7 @@ function saveModal() {
     }
     saveState();
     renderExerciseList();
-    renderHome();
+    updateHeroCard();
     renderProgressSelect();
   }
   closeModal();

@@ -78,10 +78,7 @@
           Gerenciar
         </button>
       </div>
-      <div class="tabs-row">
-        <div class="tab-pill active" data-workout="A" onclick="setWorkoutTab('A')">Treino A</div>
-        <div class="tab-pill" data-workout="B" onclick="setWorkoutTab('B')">Treino B</div>
-      </div>
+      <div class="tabs-row" id="tabs-row"></div>
       <div id="exercise-list"></div>
       <div class="finish-bar">
         <button class="btn-primary" onclick="finishWorkout()">Concluir treino de hoje</button>
@@ -175,7 +172,7 @@
       <div class="field-group" id="field-weekdays-group" style="display:none;">
         <label class="field-label">Dias de treino</label>
         <div class="day-toggle-grid" id="day-toggle-grid"></div>
-        <div class="field-hint">Toque para marcar ou desmarcar os dias em que você vai treinar. Os treinos A e B continuam se alternando automaticamente nesses dias.</div>
+        <div class="field-hint">Toque para marcar ou desmarcar os dias em que você vai treinar. Seus treinos continuam se alternando automaticamente nesses dias.</div>
       </div>
 
       <div class="modal-actions">
