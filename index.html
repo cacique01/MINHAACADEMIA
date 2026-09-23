@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1">
+<title>Meu Treino</title>
+<meta name="theme-color" content="#0A0A0A">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Treino">
+<link rel="manifest" href="data:application/manifest+json;base64,ewogICJuYW1lIjogIk1ldSBUcmVpbm8iLAogICJzaG9ydF9uYW1lIjogIlRyZWlubyIsCiAgInN0YXJ0X3VybCI6ICIuIiwKICAiZGlzcGxheSI6ICJzdGFuZGFsb25lIiwKICAiYmFja2dyb3VuZF9jb2xvciI6ICIjMEEwQTBBIiwKICAidGhlbWVfY29sb3IiOiAiIzBBMEEwQSIKfQ==">
+<link rel="apple-touch-icon" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAgAAAAIACAIAAAB7GkOtAAAI3UlEQVR4nO3dMW4bORiAUXmhagTkaClyghwtJ0iRowVQ6i0cYLPYRazImiGp773aloghf36CXPhl27YTAD1/jV4AAGMIAECUAABECQBAlAAARAkAQJQAAEQJAECUAABECQBAlAAARAkAQJQAAEQJAECUAABECQBAlAAARAkAQJQAAEQJAECUAABECQBAlAAARAkAQJQAAEQJAECUAABECQBAlAAARAkAQJQAAEQJAECUAABECQBAlAAARAkAQJQAAEQJAECUAABECQBAlAAARAkAQJQAAEQJAECUAABECQBAlAAARAkAQJQAAEQJAECUAABECQBAlAAARAkAQJQAAEQJAECUAABECQBAlAAARAkAQJQAAEQJAECUAABECQBAlAAARAkAQJQAAEQJAECUAABECQBAlAAARAkAQJQAAEQJAECUAABECQBAlAAARAkAQJQAAEQJAECUAABECQBAlAAARAkAQJQAAEQJAECUAABECQBAlAAARAkAQJQAAEQJAECUAABECQBAlAAARAkAQJQAAEQJAECUAABECQBAlAAARAkAQJQAAEQJAECUAABECQBAlAAARAkAQJQAAEQJAECUAABECQBAlAAARAkAQJQAAEQJAECUAABECQBAlAAARAkAQJQAAEQJAECUAABECQBAlAAARAkAQJQAAEQJAECUAABECQBAlAAARAkAQJQAAEQJAECUAABECQBAlAAARAkAQJQAAEQJAECUAABECQBAlAAARAkAQJQAAESdRy/gTh8+fr3lx75/+7T3SoDn9sS3zcu2baPX8Gdu3IxfrbgxwHBPf9ss9hXQHftx928BZYXbZqUAvOfJrrUrwFiR22aZALz/mS60K8BAndtmjQA86mmusivAKKnbZo0AAPBwCwTgsSFdIsvAELXbZoEAALAHAQCIEgCAKAEAiBIAgCgBAIgSAIAoAQCIEgCAKAEAiBIAgCgBAIgSAIAoAQCIEgCAKAEAiBIAgCgBAIgSAIAoAQCIEgCAKAEAiBIAgCgBAIgSAIAoAQCIEgCAqPPoBUzk+vnHHi97+bLt8bJQYCp3JQCn026H7NcXd+Dgj5jKA9QDsOsh++8bOXDwJlN5mPTfAA47ZwPfEdZiKo/UDcCoXS+fNvg9U3mwaADG7nf2tMFvmMrjRQMAQDEAM6R+hjXAPGaYiBnWcLBiAAA4CcBAwY8b8L/MwigCABAlAABRAgAQJQAAUQIAECUAAFECABAlAABRAgAQJQAAUQIAECUAAFECABAlAABRAgAQJQAAUQIAECUAAFECABAlAABRAgAQJQAAUQIAECUAAFECABAlAABRAgAQJQAAUQIAECUAAFECABAlAABRAgAQJQAAUQIAECUAAFECABAlAABRAgAQJQAAUQIAECUAAFECABAlAABRAgAQJQAAUQIAECUAAFECABAlAABRAgAQJQAAUefRC+Bfrtfr6CXAvi6Xy+gl8JMAzMLVT8TrUZeBGfgKaApuf2qc+RkIwHgmgSYnfzgBGMwMUOb8jyUAIzn9YAoGEgCAKAEAiBIAgCgBAIgSAIAoAQCIEgCAKAEAiBIAgCgBAIgSAIAoAQCIEgCAKAEAiBIAgCgBAIgSgJH8X2wwBQMJwGBOP2XO/1gCMJ4ZoMnJH04ApmASqHHmZ3AevQB+ep0H/yCbp+fqn4cAzMVsAIfxFRBAlAAARAkAQJQAAEQJAECUAABECQBAlAAARAkAQJQAAEQJAECUAABECQBAlAAARAkAQJQAAEQJAECUAABECQBAlAAARAkAQJQAAEQJAECUAABECQBAlAAARAkAQJQAAEQJAECUAABECQBAlAAARAkAQJQAAEQJAECUAABECQBAlAAARAkAQJQAAEQJAECUAABECQBAlAAARAkAQJQAAEQJAECUAABECQBAlAAARAkAQJQAAEQJwDCXL9voJcAUzMIoAgAQVQzADB83ZlgDzGOGiZhhDQcrBgCAUzYAY1Mf/KABbzKVx4sG4DRuv5vnDG5hKg/WDcBpxK5nzxncyFQe6Tx6AYO97v31849j3gh4k6k8TD0Ar3Y9cA4Z3MFUHkAA/uFMwGxM5a7SfwMAKBMAgCgBAIgSAIAoAQCIEgCAKAEAiBIAgCgBAIgSAIAoAQCIEgCAKAEAiBIAgCgBAIgSAIAoAQCIEgCAKAEAiBIAgCgBAIgSAIAoAQCIEgCAKAEAiBIAgCgBAIhaIADfv32a9tWAZ1K7bRYIAAB7WCMAjwrp/EEGxkrdNmsE4PSIp7nEfgDDdW6bZQJwet8zXWU/gBlEbpuVAnC698kutB/AJAq3zcu2baPXcI8PH7/e8mNrbQYwoSe+bVYNAADvtNhXQAA8igAARAkAQJQAAEQJAECUAABECQBAlAAARAkAQJQAAEQJAECUAABECQBAlAAARAkAQJQAAEQJAECUAABECQBAlAAARAkAQJQAAEQJAECUAABECQBAlAAARAkAQJQAAEQJAECUAABECQBAlAAARAkAQJQAAEQJAECUAABECQBAlAAARAkAQJQAAEQJAECUAABECQBAlAAARAkAQJQAAEQJAECUAABECQBAlAAARAkAQJQAAEQJAECUAABECQBAlAAARAkAQJQAAEQJAECUAABECQBAlAAARAkAQJQAAEQJAECUAABECQBAlAAARAkAQJQAAEQJAECUAABECQBAlAAARAkAQJQAAEQJAECUAABECQBAlAAARAkAQJQAAEQJAECUAABECQBAlAAARAkAQJQAAEQJAECUAABECQBAlAAARAkAQJQAAEQJAECUAABECQBAlAAARAkAQJQAAEQJAECUAABECQBAlAAARAkAQJQAAEQJAECUAABECQBAlAAARAkAQJQAAEQJAECUAABECQBAlAAARAkAQJQAAEQJAECUAABECQBAlAAARAkAQJQAAEQJAECUAABECQBAlAAARAkAQJQAAEQJAECUAABECQBAlAAARAkAQJQAAEQJAECUAABECQBAlAAARAkAQJQAAEQJAECUAABE/Q3NYNgW8vRHWgAAAABJRU5ErkJggg==">
+<link rel="icon" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAgAAAAIACAIAAAB7GkOtAAAI3UlEQVR4nO3dMW4bORiAUXmhagTkaClyghwtJ0iRowVQ6i0cYLPYRazImiGp773aloghf36CXPhl27YTAD1/jV4AAGMIAECUAABECQBAlAAARAkAQJQAAEQJAECUAABECQBAlAAARAkAQJQAAEQJAECUAABECQBAlAAARAkAQJQAAEQJAECUAABECQBAlAAARAkAQJQAAEQJAECUAABECQBAlAAARAkAQJQAAEQJAECUAABECQBAlAAARAkAQJQAAEQJAECUAABECQBAlAAARAkAQJQAAEQJAECUAABECQBAlAAARAkAQJQAAEQJAECUAABECQBAlAAARAkAQJQAAEQJAECUAABECQBAlAAARAkAQJQAAEQJAECUAABECQBAlAAARAkAQJQAAEQJAECUAABECQBAlAAARAkAQJQAAEQJAECUAABECQBAlAAARAkAQJQAAEQJAECUAABECQBAlAAARAkAQJQAAEQJAECUAABECQBAlAAARAkAQJQAAEQJAECUAABECQBAlAAARAkAQJQAAEQJAECUAABECQBAlAAARAkAQJQAAEQJAECUAABECQBAlAAARAkAQJQAAEQJAECUAABECQBAlAAARAkAQJQAAEQJAECUAABECQBAlAAARAkAQJQAAEQJAECUAABECQBAlAAARAkAQJQAAEQJAECUAABECQBAlAAARAkAQJQAAEQJAECUAABECQBAlAAARAkAQJQAAEQJAECUAABECQBAlAAARAkAQJQAAESdRy/gTh8+fr3lx75/+7T3SoDn9sS3zcu2baPX8Gdu3IxfrbgxwHBPf9ss9hXQHftx928BZYXbZqUAvOfJrrUrwFiR22aZALz/mS60K8BAndtmjQA86mmusivAKKnbZo0AAPBwCwTgsSFdIsvAELXbZoEAALAHAQCIEgCAKAEAiBIAgCgBAIgSAIAoAQCIEgCAKAEAiBIAgCgBAIgSAIAoAQCIEgCAKAEAiBIAgCgBAIgSAIAoAQCIEgCAKAEAiBIAgCgBAIgSAIAoAQCIEgCAqPPoBUzk+vnHHi97+bLt8bJQYCp3JQCn026H7NcXd+Dgj5jKA9QDsOsh++8bOXDwJlN5mPTfAA47ZwPfEdZiKo/UDcCoXS+fNvg9U3mwaADG7nf2tMFvmMrjRQMAQDEAM6R+hjXAPGaYiBnWcLBiAAA4CcBAwY8b8L/MwigCABAlAABRAgAQJQAAUQIAECUAAFECABAlAABRAgAQJQAAUQIAECUAAFECABAlAABRAgAQJQAAUQIAECUAAFECABAlAABRAgAQJQAAUQIAECUAAFECABAlAABRAgAQJQAAUQIAECUAAFECABAlAABRAgAQJQAAUQIAECUAAFECABAlAABRAgAQJQAAUQIAECUAAFECABAlAABRAgAQJQAAUQIAECUAAFECABAlAABRAgAQJQAAUefRC+Bfrtfr6CXAvi6Xy+gl8JMAzMLVT8TrUZeBGfgKaApuf2qc+RkIwHgmgSYnfzgBGMwMUOb8jyUAIzn9YAoGEgCAKAEAiBIAgCgBAIgSAIAoAQCIEgCAKAEAiBIAgCgBAIgSAIAoAQCIEgCAKAEAiBIAgCgBAIgSgJH8X2wwBQMJwGBOP2XO/1gCMJ4ZoMnJH04ApmASqHHmZ3AevQB+ep0H/yCbp+fqn4cAzMVsAIfxFRBAlAAARAkAQJQAAEQJAECUAABECQBAlAAARAkAQJQAAEQJAECUAABECQBAlAAARAkAQJQAAEQJAECUAABECQBAlAAARAkAQJQAAEQJAECUAABECQBAlAAARAkAQJQAAEQJAECUAABECQBAlAAARAkAQJQAAEQJAECUAABECQBAlAAARAkAQJQAAEQJAECUAABECQBAlAAARAkAQJQAAEQJAECUAABECQBAlAAARAkAQJQAAEQJwDCXL9voJcAUzMIoAgAQVQzADB83ZlgDzGOGiZhhDQcrBgCAUzYAY1Mf/KABbzKVx4sG4DRuv5vnDG5hKg/WDcBpxK5nzxncyFQe6Tx6AYO97v31849j3gh4k6k8TD0Ar3Y9cA4Z3MFUHkAA/uFMwGxM5a7SfwMAKBMAgCgBAIgSAIAoAQCIEgCAKAEAiBIAgCgBAIgSAIAoAQCIEgCAKAEAiBIAgCgBAIgSAIAoAQCIEgCAKAEAiBIAgCgBAIgSAIAoAQCIEgCAKAEAiBIAgCgBAIhaIADfv32a9tWAZ1K7bRYIAAB7WCMAjwrp/EEGxkrdNmsE4PSIp7nEfgDDdW6bZQJwet8zXWU/gBlEbpuVAnC698kutB/AJAq3zcu2baPXcI8PH7/e8mNrbQYwoSe+bVYNAADvtNhXQAA8igAARAkAQJQAAEQJAECUAABECQBAlAAARAkAQJQAAEQJAECUAABECQBAlAAARAkAQJQAAEQJAECUAABECQBAlAAARAkAQJQAAEQJAECUAABECQBAlAAARAkAQJQAAEQJAECUAABECQBAlAAARAkAQJQAAEQJAECUAABECQBAlAAARAkAQJQAAEQJAECUAABECQBAlAAARAkAQJQAAEQJAECUAABECQBAlAAARAkAQJQAAEQJAECUAABECQBAlAAARAkAQJQAAEQJAECUAABECQBAlAAARAkAQJQAAEQJAECUAABECQBAlAAARAkAQJQAAEQJAECUAABECQBAlAAARAkAQJQAAEQJAECUAABECQBAlAAARAkAQJQAAEQJAECUAABECQBAlAAARAkAQJQAAEQJAECUAABECQBAlAAARAkAQJQAAEQJAECUAABECQBAlAAARAkAQJQAAEQJAECUAABECQBAlAAARAkAQJQAAEQJAECUAABECQBAlAAARAkAQJQAAEQJAECUAABECQBAlAAARAkAQJQAAEQJAECUAABECQBAlAAARAkAQJQAAEQJAECUAABECQBAlAAARAkAQJQAAEQJAECUAABECQBAlAAARAkAQJQAAEQJAECUAABECQBAlAAARAkAQJQAAEQJAECUAABE/Q3NYNgW8vRHWgAAAABJRU5ErkJggg==">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="style.css">
+
+</head>
+<body>
+<div id="app">
+
+  <header class="topbar">
+    <div class="brand">
+      <div class="brand-mark">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#0A0A0A" stroke-width="2.5" stroke-linecap="round"><path d="M6 7v10M4 9v6M20 7v10M22 9v6M6 12h12"/></svg>
+      </div>
+      <div class="brand-title">MEU <span>TREINO</span></div>
+    </div>
+    <div id="date-badge" style="font-size:12px;color:var(--gray);font-weight:600;text-transform:uppercase;"></div>
+  </header>
+
+  <main>
+
+    <!-- HOME -->
+    <section class="screen active" id="screen-home">
+      <div class="install-banner" id="install-banner">
+        <span class="dismiss-x" onclick="dismissInstallBanner()">&times;</span>
+        <div class="install-banner-title">Instalar o app</div>
+        <div class="install-banner-text" id="install-banner-text">Adicione à tela inicial para abrir como um aplicativo, em tela cheia.</div>
+        <button id="install-btn" onclick="tryInstall()" style="display:none;">Instalar agora</button>
+      </div>
+
+      <div class="hero-card">
+        <div class="hero-eyebrow">TREINO DE HOJE</div>
+        <div class="hero-title" id="home-workout-title">TREINO <span class="accent">A</span></div>
+        <div class="hero-sub" id="home-workout-sub">Full body · 6 exercícios · foco em força e hipertrofia</div>
+        <button class="hero-cta" onclick="goToWorkoutFromHome()">
+          Iniciar treino
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#0A0A0A" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>
+        </button>
+      </div>
+
+      <div class="section-title"><span class="bar"></span>Checklist pré-treino</div>
+      <div class="progress-strip"><div class="progress-strip-fill" id="home-progress-fill" style="width:0%"></div></div>
+      <!-- MARKER_HOME_CHECKLIST_PROGRESS -->
+      <div class="progress-label" id="home-progress-label">0 de 6 concluído</div>
+      <div class="checklist" id="home-checklist" style="margin-top:10px;"></div>
+
+      <div class="section-title-row">
+        <div class="section-title"><span class="bar"></span>Semana</div>
+        <button class="manage-btn" onclick="openWeekdaysModal()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+          Editar dias
+        </button>
+      </div>
+      <div class="week-grid" id="week-grid"></div>
+    </section>
+
+    <!-- TREINO -->
+    <section class="screen" id="screen-workout">
+      <div class="section-title-row" style="margin-top:4px;">
+        <div class="section-title"><span class="bar"></span>Treino do dia</div>
+        <button class="manage-btn" id="workout-manage-btn" onclick="toggleManageMode('workout')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+          Gerenciar
+        </button>
+      </div>
+      <div class="tabs-row">
+        <div class="tab-pill active" data-workout="A" onclick="setWorkoutTab('A')">Treino A</div>
+        <div class="tab-pill" data-workout="B" onclick="setWorkoutTab('B')">Treino B</div>
+      </div>
+      <div id="exercise-list"></div>
+      <div class="finish-bar">
+        <button class="btn-primary" onclick="finishWorkout()">Concluir treino de hoje</button>
+      </div>
+    </section>
+
+    <!-- PRE-TREINO -->
+    <section class="screen" id="screen-pretreino">
+      <div class="section-title-row" style="margin-top:4px;">
+        <div class="section-title"><span class="bar"></span>Rotina · pré-treino</div>
+        <button class="manage-btn" id="pretreino-manage-btn" onclick="toggleManageMode('pretreino')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+          Gerenciar
+        </button>
+      </div>
+      <div class="progress-strip"><div class="progress-strip-fill" id="pre-progress-fill" style="width:0%"></div></div>
+      <div class="progress-label" id="pre-progress-label">0 de 6 concluído</div>
+      <div class="checklist" id="pretreino-checklist" style="margin-top:12px;"></div>
+      <div style="margin-top:16px;">
+        <button class="btn-secondary" onclick="resetChecklist()">Reiniciar checklist de hoje</button>
+      </div>
+    </section>
+
+    <!-- PROGRESSO -->
+    <section class="screen" id="screen-progress">
+      <div class="section-title" style="margin-top:4px;"><span class="bar"></span>Evolução de carga</div>
+      <div class="select-wrap">
+        <select id="progress-exercise-select" onchange="renderProgressChart()"></select>
+      </div>
+      <div class="chart-card">
+        <div class="chart-title" id="chart-title">Carga ao longo do tempo (kg)</div>
+        <div id="chart-container"></div>
+      </div>
+      <div class="section-title"><span class="bar"></span>Histórico completo</div>
+      <div id="history-container"></div>
+    </section>
+
+  </main>
+
+  <nav class="bottom-nav">
+    <button class="nav-btn active" data-screen="home" onclick="switchScreen('home')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-7 9 7"/><path d="M5 10v9a1 1 0 001 1h4v-6h4v6h4a1 1 0 001-1v-9"/></svg>
+      Início
+    </button>
+    <button class="nav-btn" data-screen="workout" onclick="switchScreen('workout')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 7v10M4 9v6M20 7v10M22 9v6M6 12h12"/></svg>
+      Treino
+    </button>
+    <button class="nav-btn" data-screen="pretreino" onclick="switchScreen('pretreino')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>
+      Pré-treino
+    </button>
+    <button class="nav-btn" data-screen="progress" onclick="switchScreen('progress')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19V10M11 19V4M18 19v-7"/></svg>
+      Progresso
+    </button>
+  </nav>
+
+  <div class="toast" id="toast"></div>
+
+  <div class="modal-overlay" id="modal-overlay">
+    <div class="modal-sheet">
+      <div class="modal-title" id="modal-title">Novo item</div>
+
+      <div class="field-group" id="field-time-group" style="display:none;">
+        <label class="field-label">Horário</label>
+        <input class="field-input" type="text" id="field-time" placeholder="06:00">
+      </div>
+
+      <div class="field-group" id="field-name-group">
+        <label class="field-label" id="field-name-label">Nome</label>
+        <input class="field-input" type="text" id="field-name" placeholder="Ex: Corrida leve">
+      </div>
+
+      <div class="field-group" id="field-detail-group" style="display:none;">
+        <label class="field-label">Detalhes</label>
+        <input class="field-input" type="text" id="field-detail" placeholder="Ex: 10 min em ritmo confortável">
+      </div>
+
+      <div class="field-row" id="field-exercise-row" style="display:none;">
+        <div class="field-group">
+          <label class="field-label">Séries</label>
+          <input class="field-input" type="number" id="field-series" placeholder="3">
+        </div>
+        <div class="field-group">
+          <label class="field-label">Repetições</label>
+          <input class="field-input" type="text" id="field-reps" placeholder="8-10">
+        </div>
+      </div>
+
+      <div class="field-group" id="field-weekdays-group" style="display:none;">
+        <label class="field-label">Dias de treino</label>
+        <div class="day-toggle-grid" id="day-toggle-grid"></div>
+        <div class="field-hint">Toque para marcar ou desmarcar os dias em que você vai treinar. Os treinos A e B continuam se alternando automaticamente nesses dias.</div>
+      </div>
+
+      <div class="modal-actions">
+        <button class="btn-secondary" onclick="closeModal()">Cancelar</button>
+        <button class="btn-primary" onclick="saveModal()">Salvar</button>
+      </div>
+      <button class="btn-delete" id="modal-delete-btn" onclick="deleteModalItem()" style="display:none;">Excluir</button>
+    </div>
+  </div>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
+
+echo "# MINHAACADEMIA" >> README.md 
+git init 
+git add README.md 
+git commit -m "primeiro commit" 
+git branch -M main 
+git remote add origin https://github.com/cacique01/MINHAACADEMIA.git
+ git push -u origin main

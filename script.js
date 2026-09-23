@@ -1,0 +1,782 @@
+// ---------- Data ----------
+const DEFAULT_WORKOUTS = {
+  A: [
+    {
+      id: "a1",
+      name: "Agachamento (livre ou leg press)",
+      series: 3,
+      reps: "8-10",
+    },
+    { id: "a2", name: "Supino reto", series: 3, reps: "8-10" },
+    { id: "a3", name: "Remada curvada ou puxada", series: 3, reps: "8-10" },
+    { id: "a4", name: "Desenvolvimento de ombro", series: 3, reps: "10-12" },
+    { id: "a5", name: "Panturrilha", series: 3, reps: "15" },
+    { id: "a6", name: "Prancha", series: 3, reps: "30-45s" },
+  ],
+  B: [
+    { id: "b1", name: "Levantamento terra ou stiff", series: 3, reps: "8-10" },
+    {
+      id: "b2",
+      name: "Supino inclinado ou crucifixo",
+      series: 3,
+      reps: "10-12",
+    },
+    { id: "b3", name: "Puxada frontal ou barra fixa", series: 3, reps: "8-10" },
+    { id: "b4", name: "Elevação lateral", series: 3, reps: "12-15" },
+    { id: "b5", name: "Rosca direta", series: 3, reps: "10-12" },
+    { id: "b6", name: "Tríceps (corda ou testa)", series: 3, reps: "10-12" },
+    { id: "b7", name: "Abdominal", series: 3, reps: "15-20" },
+  ],
+};
+
+const DEFAULT_PRETREINO_ITEMS = [
+  {
+    id: "p1",
+    time: "06:00",
+    label: "Beber água",
+    detail: "1-2 copos assim que acordar",
+  },
+  {
+    id: "p2",
+    time: "06:02",
+    label: "Vestir roupa de treino",
+    detail: "Roupa e itens separados na noite anterior",
+  },
+  {
+    id: "p3",
+    time: "06:05",
+    label: "Lanche rápido",
+    detail: "Banana, castanhas ou café — nada pesado",
+  },
+  {
+    id: "p4",
+    time: "06:12",
+    label: "Banheiro / higiene",
+    detail: "Ir ao banheiro e escovar os dentes",
+  },
+  {
+    id: "p5",
+    time: "06:18",
+    label: "Alongamento dinâmico",
+    detail: "2-3 min de mobilidade leve",
+  },
+  {
+    id: "p6",
+    time: "06:25",
+    label: "Saída para a academia",
+    detail: "Conferir garrafinha, toalha, fone, chave",
+  },
+];
+
+const WEEKDAYS = ["DOM", "SEG", "TER", "QUA", "QUI", "SEX", "SÁB"];
+
+// ---------- Storage helpers ----------
+const STORE_KEY = "meutreino_state_v1";
+function loadState() {
+  let s = null;
+  try {
+    const raw = localStorage.getItem(STORE_KEY);
+    if (raw) s = JSON.parse(raw);
+  } catch (e) {
+    console.warn("storage read failed", e);
+  }
+  if (!s)
+    s = {
+      checklist: {},
+      checklistDate: null,
+      lastWorkout: null,
+      logs: [],
+      installDismissed: false,
+    };
+  if (!s.workouts) s.workouts = JSON.parse(JSON.stringify(DEFAULT_WORKOUTS));
+  if (!s.pretreino)
+    s.pretreino = JSON.parse(JSON.stringify(DEFAULT_PRETREINO_ITEMS));
+  if (!s.trainDows) s.trainDows = [1, 3, 5]; // Seg, Qua, Sex
+  return s;
+}
+function generateId() {
+  return "x" + Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
+}
+function saveState() {
+  try {
+    localStorage.setItem(STORE_KEY, JSON.stringify(state));
+  } catch (e) {
+    console.warn("storage write failed", e);
+  }
+}
+let state = loadState();
+
+function todayStr() {
+  const d = new Date();
+  return (
+    d.getFullYear() +
+    "-" +
+    String(d.getMonth() + 1).padStart(2, "0") +
+    "-" +
+    String(d.getDate()).padStart(2, "0")
+  );
+}
+function todayLabel() {
+  const d = new Date();
+  return (
+    WEEKDAYS[d.getDay()] +
+    " · " +
+    String(d.getDate()).padStart(2, "0") +
+    "/" +
+    String(d.getMonth() + 1).padStart(2, "0")
+  );
+}
+
+// reset checklist if it's a new day
+if (state.checklistDate !== todayStr()) {
+  state.checklist = {};
+  state.checklistDate = todayStr();
+  saveState();
+}
+
+// ---------- Navigation ----------
+function switchScreen(name) {
+  document
+    .querySelectorAll(".screen")
+    .forEach((s) => s.classList.remove("active"));
+  document.getElementById("screen-" + name).classList.add("active");
+  document
+    .querySelectorAll(".nav-btn")
+    .forEach((b) => b.classList.toggle("active", b.dataset.screen === name));
+  window.scrollTo(0, 0);
+}
+function goToWorkoutFromHome() {
+  switchScreen("workout");
+  document
+    .querySelectorAll(".nav-btn")
+    .forEach((b) =>
+      b.classList.toggle("active", b.dataset.screen === "workout"),
+    );
+}
+
+// ---------- Manage mode ----------
+let manageModePretreino = false;
+let manageModeWorkout = false;
+function toggleManageMode(scope) {
+  if (scope === "pretreino") {
+    manageModePretreino = !manageModePretreino;
+    document
+      .getElementById("pretreino-manage-btn")
+      .classList.toggle("active", manageModePretreino);
+    renderChecklist(
+      "pretreino-checklist",
+      "pre-progress-fill",
+      "pre-progress-label",
+    );
+  } else {
+    manageModeWorkout = !manageModeWorkout;
+    document
+      .getElementById("workout-manage-btn")
+      .classList.toggle("active", manageModeWorkout);
+    renderExerciseList();
+  }
+}
+
+// ---------- Checklist rendering (shared render fn, two containers) ----------
+function renderChecklist(containerId, fillId, labelId) {
+  const container = document.getElementById(containerId);
+  const isPretreinoScreen = containerId === "pretreino-checklist";
+  const manage = isPretreinoScreen && manageModePretreino;
+  container.innerHTML = "";
+  let doneCount = 0;
+  state.pretreino.forEach((item) => {
+    const isDone = !!state.checklist[item.id];
+    if (isDone) doneCount++;
+    const el = document.createElement("div");
+    el.className =
+      "check-item" + (isDone ? " done" : "") + (manage ? " manage-mode" : "");
+    if (manage) {
+      el.innerHTML = `
+        <div class="check-text">
+          <div class="check-time">${item.time || ""}</div>
+          <div class="check-label">${item.label}</div>
+          <div class="check-detail">${item.detail || ""}</div>
+        </div>
+        <div class="item-actions">
+          <div class="icon-btn edit"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></div>
+          <div class="icon-btn delete"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2m3 0l-1 14a2 2 0 01-2 2H7a2 2 0 01-2-2L4 6h16z"/></svg></div>
+        </div>
+      `;
+      el.querySelector(".icon-btn.edit").onclick = (ev) => {
+        ev.stopPropagation();
+        openModal("pretreino", item.id);
+      };
+      el.querySelector(".icon-btn.delete").onclick = (ev) => {
+        ev.stopPropagation();
+        confirmDeletePretreino(item.id);
+      };
+    } else {
+      el.innerHTML = `
+        <div class="check-box">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#0A0A0A" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>
+        </div>
+        <div class="check-text">
+          <div class="check-time">${item.time || ""}</div>
+          <div class="check-label">${item.label}</div>
+          <div class="check-detail">${item.detail || ""}</div>
+        </div>
+      `;
+      el.onclick = () => {
+        state.checklist[item.id] = !state.checklist[item.id];
+        saveState();
+        renderChecklist(
+          "home-checklist",
+          "home-progress-fill",
+          "home-progress-label",
+        );
+        renderChecklist(
+          "pretreino-checklist",
+          "pre-progress-fill",
+          "pre-progress-label",
+        );
+      };
+    }
+    container.appendChild(el);
+  });
+  if (manage) {
+    const addEl = document.createElement("div");
+    addEl.className = "add-card";
+    addEl.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg> Adicionar item`;
+    addEl.onclick = () => openModal("pretreino", null);
+    container.appendChild(addEl);
+  }
+  const total = state.pretreino.length || 1;
+  const pct = Math.round((doneCount / total) * 100);
+  document.getElementById(fillId).style.width = pct + "%";
+  document.getElementById(labelId).textContent =
+    doneCount +
+    " de " +
+    state.pretreino.length +
+    " concluído" +
+    (doneCount === 1 ? "" : "s");
+}
+function resetChecklist() {
+  state.checklist = {};
+  saveState();
+  renderChecklist(
+    "home-checklist",
+    "home-progress-fill",
+    "home-progress-label",
+  );
+  renderChecklist(
+    "pretreino-checklist",
+    "pre-progress-fill",
+    "pre-progress-label",
+  );
+  showToast("Checklist reiniciada");
+}
+function confirmDeletePretreino(id) {
+  state.pretreino = state.pretreino.filter((i) => i.id !== id);
+  delete state.checklist[id];
+  saveState();
+  renderChecklist(
+    "home-checklist",
+    "home-progress-fill",
+    "home-progress-label",
+  );
+  renderChecklist(
+    "pretreino-checklist",
+    "pre-progress-fill",
+    "pre-progress-label",
+  );
+  showToast("Item removido");
+}
+
+// ---------- Week grid ----------
+function renderWeekGrid() {
+  const grid = document.getElementById("week-grid");
+  grid.innerHTML = "";
+  const today = new Date();
+  const todayDow = today.getDay();
+  // Monday-start week
+  const mondayOffset = todayDow === 0 ? -6 : 1 - todayDow;
+  const monday = new Date(today);
+  monday.setDate(today.getDate() + mondayOffset);
+
+  const nextTag = getNextWorkoutTag();
+  // Assign A/B alternating across the user's chosen training days for the week
+  const trainDows = state.trainDows.slice().sort();
+  let tag = nextTag;
+  const tagsForWeek = {};
+  for (let i = 0; i < 7; i++) {
+    const d = new Date(monday);
+    d.setDate(monday.getDate() + i);
+    const dow = d.getDay();
+    if (trainDows.includes(dow)) {
+      tagsForWeek[i] = tag;
+      tag = tag === "A" ? "B" : "A";
+    }
+  }
+  for (let i = 0; i < 7; i++) {
+    const d = new Date(monday);
+    d.setDate(monday.getDate() + i);
+    const isToday = d.toDateString() === today.toDateString();
+    const dayTag = tagsForWeek[i];
+    const el = document.createElement("div");
+    el.className =
+      "week-day" +
+      (dayTag ? " " + dayTag.toLowerCase() : "") +
+      (isToday ? " today" : "");
+    el.innerHTML = `<div class="dow">${WEEKDAYS[d.getDay()]}</div><div class="tag">${dayTag ? dayTag : "—"}</div>`;
+    grid.appendChild(el);
+  }
+}
+
+// ---------- Workout tab ----------
+let activeWorkoutTag = "A";
+function getNextWorkoutTag() {
+  if (!state.lastWorkout) return "A";
+  return state.lastWorkout === "A" ? "B" : "A";
+}
+function setWorkoutTab(tag) {
+  activeWorkoutTag = tag;
+  document
+    .querySelectorAll(".tab-pill")
+    .forEach((t) => t.classList.toggle("active", t.dataset.workout === tag));
+  renderExerciseList();
+}
+function getLastLoad(exId) {
+  const entries = state.logs.filter((l) => l.exId === exId);
+  if (!entries.length) return null;
+  return entries[entries.length - 1];
+}
+function renderExerciseList() {
+  const list = document.getElementById("exercise-list");
+  list.innerHTML = "";
+  const exercises = state.workouts[activeWorkoutTag];
+  exercises.forEach((ex) => {
+    const last = getLastLoad(ex.id);
+    const inputId = "load-" + ex.id;
+    const el = document.createElement("div");
+    el.className = "exercise-card" + (manageModeWorkout ? " manage-mode" : "");
+    if (manageModeWorkout) {
+      el.innerHTML = `
+        <div class="exercise-head">
+          <div>
+            <div class="exercise-name">${ex.name}</div>
+            <div class="exercise-meta" style="margin-top:4px;">${ex.series}x${ex.reps}</div>
+          </div>
+          <div class="item-actions">
+            <div class="icon-btn edit"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></div>
+            <div class="icon-btn delete"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2m3 0l-1 14a2 2 0 01-2 2H7a2 2 0 01-2-2L4 6h16z"/></svg></div>
+          </div>
+        </div>
+      `;
+      el.querySelector(".icon-btn.edit").onclick = (ev) => {
+        ev.stopPropagation();
+        openModal("exercise", ex.id, activeWorkoutTag);
+      };
+      el.querySelector(".icon-btn.delete").onclick = (ev) => {
+        ev.stopPropagation();
+        confirmDeleteExercise(ex.id);
+      };
+    } else {
+      el.innerHTML = `
+        <div class="exercise-head">
+          <div class="exercise-name">${ex.name}</div>
+          <div class="exercise-meta">${ex.series}x${ex.reps}</div>
+        </div>
+        <div class="exercise-row">
+          <button class="step-btn" onclick="stepLoad('${inputId}', -2.5)">−</button>
+          <div class="load-input-wrap">
+            <input type="number" inputmode="decimal" id="${inputId}" placeholder="0" value="${last ? last.kg : ""}">
+            <span>kg</span>
+          </div>
+          <button class="step-btn" onclick="stepLoad('${inputId}', 2.5)">+</button>
+        </div>
+        ${last ? `<div class="last-load">Última carga: <b>${last.kg} kg</b> em ${formatDate(last.date)}</div>` : `<div class="last-load">Ainda sem registro</div>`}
+      `;
+    }
+    list.appendChild(el);
+  });
+  if (manageModeWorkout) {
+    const addEl = document.createElement("div");
+    addEl.className = "add-card";
+    addEl.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg> Adicionar atividade`;
+    addEl.onclick = () => openModal("exercise", null, activeWorkoutTag);
+    list.appendChild(addEl);
+  }
+}
+function confirmDeleteExercise(id) {
+  state.workouts.A = state.workouts.A.filter((e) => e.id !== id);
+  state.workouts.B = state.workouts.B.filter((e) => e.id !== id);
+  saveState();
+  renderExerciseList();
+  renderProgressSelect();
+  showToast("Atividade removida");
+}
+function stepLoad(inputId, delta) {
+  const input = document.getElementById(inputId);
+  let val = parseFloat(input.value) || 0;
+  val = Math.max(0, val + delta);
+  input.value = val % 1 === 0 ? val : val.toFixed(1);
+}
+function finishWorkout() {
+  const exercises = state.workouts[activeWorkoutTag];
+  const today = todayStr();
+  let loggedCount = 0;
+  exercises.forEach((ex) => {
+    const input = document.getElementById("load-" + ex.id);
+    const val = parseFloat(input.value);
+    if (!isNaN(val) && val > 0) {
+      state.logs.push({
+        exId: ex.id,
+        exName: ex.name,
+        workout: activeWorkoutTag,
+        kg: val,
+        date: today,
+      });
+      loggedCount++;
+    }
+  });
+  state.lastWorkout = activeWorkoutTag;
+  saveState();
+  renderHome();
+  renderWeekGrid();
+  renderProgressSelect();
+  if (loggedCount > 0) {
+    showToast(
+      "Treino " +
+        activeWorkoutTag +
+        " concluído! " +
+        loggedCount +
+        " cargas registradas.",
+    );
+  } else {
+    showToast("Treino " + activeWorkoutTag + " marcado como concluído.");
+  }
+  switchScreen("home");
+}
+
+// ---------- Home ----------
+function renderHome() {
+  const nextTag = getNextWorkoutTag();
+  document.getElementById("home-workout-title").innerHTML =
+    'TREINO <span class="accent">' + nextTag + "</span>";
+  const count = state.workouts[nextTag].length;
+  document.getElementById("home-workout-sub").textContent =
+    "Full body · " + count + " exercícios · foco em força e hipertrofia";
+  activeWorkoutTag = nextTag;
+  document
+    .querySelectorAll(".tab-pill")
+    .forEach((t) =>
+      t.classList.toggle("active", t.dataset.workout === nextTag),
+    );
+  renderExerciseList();
+}
+
+// ---------- Progress ----------
+function renderProgressSelect() {
+  const sel = document.getElementById("progress-exercise-select");
+  const allExercises = [...state.workouts.A, ...state.workouts.B];
+  const prevVal = sel.value;
+  sel.innerHTML = "";
+  allExercises.forEach((ex) => {
+    const opt = document.createElement("option");
+    opt.value = ex.id;
+    opt.textContent = ex.name;
+    sel.appendChild(opt);
+  });
+  if (prevVal && allExercises.some((e) => e.id === prevVal))
+    sel.value = prevVal;
+  renderProgressChart();
+}
+function formatDate(dstr) {
+  const [y, m, d] = dstr.split("-");
+  return d + "/" + m;
+}
+function renderProgressChart() {
+  const sel = document.getElementById("progress-exercise-select");
+  const exId = sel.value;
+  const entries = state.logs.filter((l) => l.exId === exId);
+  const chartContainer = document.getElementById("chart-container");
+  const historyContainer = document.getElementById("history-container");
+
+  if (!entries.length) {
+    chartContainer.innerHTML =
+      '<div class="empty-state">Sem registros ainda.<br>Conclua um treino para começar a ver sua evolução.</div>';
+    historyContainer.innerHTML = "";
+    return;
+  }
+
+  const w = 400,
+    h = 140,
+    pad = 24;
+  const kgs = entries.map((e) => e.kg);
+  const minKg = Math.min(...kgs) * 0.9;
+  const maxKg = Math.max(...kgs) * 1.1;
+  const range = maxKg - minKg || 1;
+  const stepX = entries.length > 1 ? (w - pad * 2) / (entries.length - 1) : 0;
+
+  const points = entries.map((e, i) => {
+    const x = pad + i * stepX;
+    const y = h - pad - ((e.kg - minKg) / range) * (h - pad * 2);
+    return [x, y];
+  });
+  const pathD = points
+    .map(
+      (p, i) => (i === 0 ? "M" : "L") + p[0].toFixed(1) + " " + p[1].toFixed(1),
+    )
+    .join(" ");
+  const areaD =
+    pathD +
+    ` L ${points[points.length - 1][0].toFixed(1)} ${h - pad} L ${points[0][0].toFixed(1)} ${h - pad} Z`;
+
+  const dots = points
+    .map(
+      (p, i) =>
+        `<circle cx="${p[0].toFixed(1)}" cy="${p[1].toFixed(1)}" r="4" fill="#FF6A00" stroke="#0A0A0A" stroke-width="1.5"/>`,
+    )
+    .join("");
+  const lastLabel = `<text x="${points[points.length - 1][0].toFixed(1)}" y="${(points[points.length - 1][1] - 10).toFixed(1)}" fill="#FFFFFF" font-size="13" font-weight="700" text-anchor="middle" font-family="Inter, sans-serif">${entries[entries.length - 1].kg}kg</text>`;
+
+  chartContainer.innerHTML = `
+    <svg viewBox="0 0 ${w} ${h}" style="width:100%;height:${h}px;overflow:visible;">
+      <defs>
+        <linearGradient id="areaGrad" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#FF6A00" stop-opacity="0.35"/>
+          <stop offset="100%" stop-color="#FF6A00" stop-opacity="0"/>
+        </linearGradient>
+      </defs>
+      <path d="${areaD}" fill="url(#areaGrad)"/>
+      <path d="${pathD}" fill="none" stroke="#FF6A00" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+      ${dots}
+      ${lastLabel}
+    </svg>
+  `;
+
+  const rows = entries
+    .slice()
+    .reverse()
+    .map(
+      (e) => `
+    <tr><td>${formatDate(e.date)}</td><td>Treino ${e.workout}</td><td style="text-align:right;font-weight:700;">${e.kg} kg</td></tr>
+  `,
+    )
+    .join("");
+  historyContainer.innerHTML = `
+    <table class="history-table">
+      <thead><tr><th>Data</th><th>Treino</th><th style="text-align:right;">Carga</th></tr></thead>
+      <tbody>${rows}</tbody>
+    </table>
+  `;
+}
+
+// ---------- Modal (add/edit pretreino item, exercise, or weekdays) ----------
+let modalState = { type: null, id: null, workoutTag: null };
+let selectedDays = [];
+function openModal(type, id, workoutTag) {
+  modalState = { type, id, workoutTag };
+  const isEdit = !!id;
+  document.getElementById("field-name-group").style.display =
+    type === "weekdays" ? "none" : "block";
+  document.getElementById("field-time-group").style.display =
+    type === "pretreino" ? "block" : "none";
+  document.getElementById("field-detail-group").style.display =
+    type === "pretreino" ? "block" : "none";
+  document.getElementById("field-exercise-row").style.display =
+    type === "exercise" ? "flex" : "none";
+  document.getElementById("field-weekdays-group").style.display =
+    type === "weekdays" ? "block" : "none";
+  document.getElementById("field-name-label").textContent =
+    type === "exercise" ? "Nome da atividade" : "Nome";
+  document.getElementById("modal-delete-btn").style.display =
+    isEdit && type !== "weekdays" ? "block" : "none";
+
+  if (type === "pretreino") {
+    document.getElementById("modal-title").textContent = isEdit
+      ? "Editar item"
+      : "Novo item pré-treino";
+    const item = isEdit ? state.pretreino.find((i) => i.id === id) : null;
+    document.getElementById("field-time").value = item ? item.time || "" : "";
+    document.getElementById("field-name").value = item ? item.label : "";
+    document.getElementById("field-detail").value = item
+      ? item.detail || ""
+      : "";
+    document.getElementById("field-name").placeholder = "Ex: Tomar pré-treino";
+  } else if (type === "exercise") {
+    document.getElementById("modal-title").textContent = isEdit
+      ? "Editar atividade"
+      : "Nova atividade física";
+    const item = isEdit
+      ? state.workouts[workoutTag].find((e) => e.id === id)
+      : null;
+    document.getElementById("field-name").value = item ? item.name : "";
+    document.getElementById("field-series").value = item ? item.series : 3;
+    document.getElementById("field-reps").value = item ? item.reps : "";
+    document.getElementById("field-name").placeholder =
+      "Ex: Corrida leve, Natação...";
+  } else if (type === "weekdays") {
+    document.getElementById("modal-title").textContent =
+      "Dias de treino na semana";
+    renderDayToggles();
+  }
+  document.getElementById("modal-overlay").classList.add("show");
+}
+function openWeekdaysModal() {
+  openModal("weekdays", null, null);
+}
+function renderDayToggles() {
+  selectedDays = [...state.trainDows];
+  const grid = document.getElementById("day-toggle-grid");
+  grid.innerHTML = "";
+  WEEKDAYS.forEach((label, dow) => {
+    const el = document.createElement("div");
+    el.className =
+      "day-toggle" + (selectedDays.includes(dow) ? " selected" : "");
+    el.textContent = label;
+    el.onclick = () => {
+      if (selectedDays.includes(dow)) {
+        selectedDays = selectedDays.filter((d) => d !== dow);
+      } else {
+        selectedDays.push(dow);
+      }
+      el.classList.toggle("selected");
+    };
+    grid.appendChild(el);
+  });
+}
+function closeModal() {
+  document.getElementById("modal-overlay").classList.remove("show");
+}
+function saveModal() {
+  const { type, id, workoutTag } = modalState;
+
+  if (type === "weekdays") {
+    if (selectedDays.length === 0) {
+      showToast("Selecione ao menos um dia");
+      return;
+    }
+    state.trainDows = selectedDays.slice().sort();
+    saveState();
+    renderWeekGrid();
+    closeModal();
+    showToast("Dias de treino atualizados");
+    return;
+  }
+
+  const name = document.getElementById("field-name").value.trim();
+  if (!name) {
+    showToast("Digite um nome");
+    return;
+  }
+
+  if (type === "pretreino") {
+    const time = document.getElementById("field-time").value.trim();
+    const detail = document.getElementById("field-detail").value.trim();
+    if (id) {
+      const item = state.pretreino.find((i) => i.id === id);
+      item.time = time;
+      item.label = name;
+      item.detail = detail;
+    } else {
+      state.pretreino.push({ id: generateId(), time, label: name, detail });
+    }
+    saveState();
+    renderChecklist(
+      "home-checklist",
+      "home-progress-fill",
+      "home-progress-label",
+    );
+    renderChecklist(
+      "pretreino-checklist",
+      "pre-progress-fill",
+      "pre-progress-label",
+    );
+  } else {
+    const series = parseInt(document.getElementById("field-series").value) || 3;
+    const reps = document.getElementById("field-reps").value.trim() || "10";
+    if (id) {
+      const item = state.workouts[workoutTag].find((e) => e.id === id);
+      item.name = name;
+      item.series = series;
+      item.reps = reps;
+    } else {
+      state.workouts[workoutTag].push({ id: generateId(), name, series, reps });
+    }
+    saveState();
+    renderExerciseList();
+    renderHome();
+    renderProgressSelect();
+  }
+  closeModal();
+  showToast("Salvo com sucesso");
+}
+function deleteModalItem() {
+  const { type, id, workoutTag } = modalState;
+  if (type === "pretreino") {
+    confirmDeletePretreino(id);
+  } else if (type === "exercise") {
+    confirmDeleteExercise(id);
+  }
+  closeModal();
+}
+
+// ---------- Toast ----------
+let toastTimer;
+function showToast(msg) {
+  const toast = document.getElementById("toast");
+  toast.textContent = msg;
+  toast.classList.add("show");
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => toast.classList.remove("show"), 2200);
+}
+
+// ---------- Install banner (PWA) ----------
+let deferredPrompt = null;
+window.addEventListener("beforeinstallprompt", (e) => {
+  e.preventDefault();
+  deferredPrompt = e;
+  document.getElementById("install-btn").style.display = "inline-block";
+  if (!state.installDismissed)
+    document.getElementById("install-banner").classList.add("show");
+});
+function tryInstall() {
+  if (deferredPrompt) {
+    deferredPrompt.prompt();
+    deferredPrompt.userChoice.finally(() => {
+      deferredPrompt = null;
+      document.getElementById("install-banner").classList.remove("show");
+    });
+  }
+}
+function dismissInstallBanner() {
+  document.getElementById("install-banner").classList.remove("show");
+  state.installDismissed = true;
+  saveState();
+}
+function isStandalone() {
+  return (
+    window.matchMedia("(display-mode: standalone)").matches ||
+    window.navigator.standalone === true
+  );
+}
+function isiOS() {
+  return /iphone|ipad|ipod/i.test(window.navigator.userAgent);
+}
+(function initInstallBanner() {
+  if (isStandalone() || state.installDismissed) return;
+  if (isiOS()) {
+    document.getElementById("install-banner-text").textContent =
+      'No Safari, toque no ícone de compartilhar e depois em "Adicionar à Tela de Início" para instalar.';
+    document.getElementById("install-banner").classList.add("show");
+  }
+  // Android/Chrome banner is shown by the beforeinstallprompt listener above
+})();
+
+// ---------- Init ----------
+document.getElementById("date-badge").textContent = todayLabel();
+renderChecklist("home-checklist", "home-progress-fill", "home-progress-label");
+renderChecklist(
+  "pretreino-checklist",
+  "pre-progress-fill",
+  "pre-progress-label",
+);
+renderWeekGrid();
+renderHome();
+renderProgressSelect();
