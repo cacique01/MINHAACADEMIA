@@ -1,5 +1,3 @@
-<<<<<<< HEAD
-=======
 // ---------- Contador de uso (Firebase) ----------
 // Os valores abaixo (apiKey, authDomain, etc.) NÃO são senhas nem segredos — é o
 // "endereço público" do seu projeto Firebase, seguro para ficar no código do navegador.
@@ -79,7 +77,6 @@ async function trackOpenIfNeeded() {
   }
 }
 
->>>>>>> 4aebd99 (mudança)
 // ---------- Data ----------
 const DEFAULT_WORKOUTS = {
   A: [
@@ -173,10 +170,7 @@ function loadState() {
   if (!s.workouts) s.workouts = JSON.parse(JSON.stringify(DEFAULT_WORKOUTS));
   if (!s.pretreino)
     s.pretreino = JSON.parse(JSON.stringify(DEFAULT_PRETREINO_ITEMS));
-<<<<<<< HEAD
   if (!s.trainDows) s.trainDows = [1, 3, 5]; // Seg, Qua, Sex
-  if (!s.workoutOrder) s.workoutOrder = Object.keys(s.workouts).sort();
-=======
   if (!s.workoutOrder) s.workoutOrder = Object.keys(s.workouts).sort();
   if (!s.daySchedule) {
     // Migra de versões antigas (trainDows + ciclo automático) para um treino fixo por dia
@@ -195,7 +189,6 @@ function loadState() {
       s.daySchedule[dow] = order[i % order.length];
     });
   }
->>>>>>> 4aebd99 (mudança)
   return s;
 }
 function generateId() {
@@ -403,68 +396,28 @@ function renderWeekGrid() {
   const monday = new Date(today);
   monday.setDate(today.getDate() + mondayOffset);
 
-<<<<<<< HEAD
-  const nextTag = getNextWorkoutTag();
-  // Assign workout tags cycling through state.workoutOrder across the user's chosen training days
-  const trainDows = state.trainDows.slice().sort();
-  let tag = nextTag;
-  const tagsForWeek = {};
-=======
->>>>>>> 4aebd99 (mudança)
   for (let i = 0; i < 7; i++) {
     const d = new Date(monday);
     d.setDate(monday.getDate() + i);
     const dow = d.getDay();
-<<<<<<< HEAD
-    if (trainDows.includes(dow)) {
-      tagsForWeek[i] = tag;
-      tag = nextInOrder(tag);
-    }
-  }
-  for (let i = 0; i < 7; i++) {
-    const d = new Date(monday);
-    d.setDate(monday.getDate() + i);
-    const isToday = d.toDateString() === today.toDateString();
-    const dayTag = tagsForWeek[i];
-=======
     const isToday = d.toDateString() === today.toDateString();
     const dayTag = state.daySchedule[dow];
->>>>>>> 4aebd99 (mudança)
     const el = document.createElement("div");
     el.className =
       "week-day" +
       (dayTag ? " " + tagParityClass(dayTag) : "") +
       (isToday ? " today" : "");
-<<<<<<< HEAD
-    el.innerHTML = `<div class="dow">${WEEKDAYS[d.getDay()]}</div><div class="tag">${dayTag ? dayTag : "—"}</div>`;
-=======
     el.innerHTML = `<div class="dow">${WEEKDAYS[dow]}</div><div class="tag">${dayTag ? dayTag : "—"}</div>`;
->>>>>>> 4aebd99 (mudança)
     grid.appendChild(el);
   }
 }
 
 // ---------- Workout tabs (dynamic) ----------
 let activeWorkoutTag = "A";
-<<<<<<< HEAD
-function nextInOrder(tag) {
-  const order = state.workoutOrder;
-  const idx = order.indexOf(tag);
-  if (idx === -1) return order[0];
-  return order[(idx + 1) % order.length];
-}
-=======
->>>>>>> 4aebd99 (mudança)
 function tagParityClass(tag) {
   const idx = state.workoutOrder.indexOf(tag);
   return idx % 2 === 0 ? "a" : "b";
 }
-<<<<<<< HEAD
-function getNextWorkoutTag() {
-  if (!state.lastWorkout || !state.workoutOrder.includes(state.lastWorkout))
-    return state.workoutOrder[0];
-  return nextInOrder(state.lastWorkout);
-=======
 // Retorna o treino marcado para hoje. Se hoje for descanso, procura o próximo
 // dia com treino marcado nos próximos 7 dias; se nada estiver marcado, cai no primeiro treino da lista.
 function getNextWorkoutTag() {
@@ -480,7 +433,6 @@ function isRestDayToday() {
   const todayDow = new Date().getDay();
   const tag = state.daySchedule[todayDow];
   return !tag || !state.workoutOrder.includes(tag);
->>>>>>> 4aebd99 (mudança)
 }
 function nextWorkoutLetter() {
   const alphabet = "ABCDEFGHIJ";
@@ -542,12 +494,9 @@ function confirmDeleteWorkoutTag(tag) {
   state.workoutOrder = state.workoutOrder.filter((t) => t !== tag);
   if (activeWorkoutTag === tag) activeWorkoutTag = state.workoutOrder[0];
   if (state.lastWorkout === tag) state.lastWorkout = null;
-<<<<<<< HEAD
-=======
   Object.keys(state.daySchedule).forEach((dow) => {
     if (state.daySchedule[dow] === tag) state.daySchedule[dow] = null;
   });
->>>>>>> 4aebd99 (mudança)
   saveState();
   renderTabs();
   renderExerciseList();
@@ -679,13 +628,6 @@ function finishWorkout() {
 // ---------- Home ----------
 function updateHeroCard() {
   const nextTag = getNextWorkoutTag();
-<<<<<<< HEAD
-  document.getElementById("home-workout-title").innerHTML =
-    'TREINO <span class="accent">' + nextTag + "</span>";
-  const count = (state.workouts[nextTag] || []).length;
-  document.getElementById("home-workout-sub").textContent =
-    "Full body · " + count + " exercícios · foco em força e hipertrofia";
-=======
   const restToday = isRestDayToday();
   const eyebrow = document.getElementById("home-hero-eyebrow");
   const ctaText = document.getElementById("home-hero-cta-text");
@@ -718,7 +660,6 @@ function nextScheduledDayLabel() {
     }
   }
   return null;
->>>>>>> 4aebd99 (mudança)
 }
 function renderHome() {
   updateHeroCard();
@@ -828,11 +769,7 @@ function renderProgressChart() {
 
 // ---------- Modal (add/edit pretreino item, exercise, or weekdays) ----------
 let modalState = { type: null, id: null, workoutTag: null };
-<<<<<<< HEAD
-let selectedDays = [];
-=======
 let tempDaySchedule = {};
->>>>>>> 4aebd99 (mudança)
 function openModal(type, id, workoutTag) {
   modalState = { type, id, workoutTag };
   const isEdit = !!id;
@@ -875,45 +812,22 @@ function openModal(type, id, workoutTag) {
     document.getElementById("field-name").placeholder =
       "Ex: Corrida leve, Natação...";
   } else if (type === "weekdays") {
-<<<<<<< HEAD
-    document.getElementById("modal-title").textContent =
-      "Dias de treino na semana";
-    renderDayToggles();
-=======
     document.getElementById("modal-title").textContent = "Treino de cada dia";
     tempDaySchedule = JSON.parse(JSON.stringify(state.daySchedule));
     renderDaySchedulePicker();
->>>>>>> 4aebd99 (mudança)
   }
   document.getElementById("modal-overlay").classList.add("show");
 }
 function openWeekdaysModal() {
   openModal("weekdays", null, null);
 }
-<<<<<<< HEAD
-function renderDayToggles() {
-  selectedDays = [...state.trainDows];
-=======
 function renderDaySchedulePicker() {
   // Apenas desenha a grade a partir de tempDaySchedule — não reseta o valor
   // (o reset a partir de state.daySchedule acontece só ao abrir o modal, em openModal).
->>>>>>> 4aebd99 (mudança)
   const grid = document.getElementById("day-toggle-grid");
   grid.innerHTML = "";
   WEEKDAYS.forEach((label, dow) => {
     const el = document.createElement("div");
-<<<<<<< HEAD
-    el.className =
-      "day-toggle" + (selectedDays.includes(dow) ? " selected" : "");
-    el.textContent = label;
-    el.onclick = () => {
-      if (selectedDays.includes(dow)) {
-        selectedDays = selectedDays.filter((d) => d !== dow);
-      } else {
-        selectedDays.push(dow);
-      }
-      el.classList.toggle("selected");
-=======
     const tag = tempDaySchedule[dow];
     el.className = "day-toggle" + (tag ? " " + tagParityClass(tag) : "");
     el.innerHTML = `<div class="dt-dow">${label}</div><div class="dt-tag">${tag || "—"}</div>`;
@@ -923,7 +837,6 @@ function renderDaySchedulePicker() {
       const nextIdx = currentIdx + 1;
       tempDaySchedule[dow] = nextIdx < order.length ? order[nextIdx] : null;
       renderDaySchedulePicker();
->>>>>>> 4aebd99 (mudança)
     };
     grid.appendChild(el);
   });
@@ -935,20 +848,10 @@ function saveModal() {
   const { type, id, workoutTag } = modalState;
 
   if (type === "weekdays") {
-<<<<<<< HEAD
-    if (selectedDays.length === 0) {
-      showToast("Selecione ao menos um dia");
-      return;
-    }
-    state.trainDows = selectedDays.slice().sort();
-    saveState();
-    renderWeekGrid();
-=======
     state.daySchedule = tempDaySchedule;
     saveState();
     renderWeekGrid();
     renderHome();
->>>>>>> 4aebd99 (mudança)
     closeModal();
     showToast("Dias de treino atualizados");
     return;
@@ -1074,7 +977,4 @@ renderChecklist(
 renderWeekGrid();
 renderHome();
 renderProgressSelect();
-<<<<<<< HEAD
-=======
 initUsageCounter();
->>>>>>> 4aebd99 (mudança)
