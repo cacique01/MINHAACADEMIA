@@ -132,6 +132,51 @@ main {
 }
 .section-title .bar { width: 4px; height: 18px; background: var(--orange); border-radius: 2px; display: inline-block; }
 
+.dev-credit {
+  margin-top: 28px;
+  padding-top: 18px;
+  border-top: 1px solid var(--gray-line);
+  text-align: center;
+}
+.dev-credit .made-by {
+  font-size: 11px;
+  color: var(--gray);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 6px;
+}
+.dev-credit .dev-name {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--white);
+  margin-bottom: 10px;
+}
+.dev-credit .dev-links {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.dev-credit .dev-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--card-2);
+  border: 1px solid var(--gray-line);
+  color: var(--gray);
+  font-size: 12px;
+  font-weight: 600;
+  padding: 7px 12px;
+  border-radius: 20px;
+  text-decoration: none;
+}
+.dev-credit .dev-link svg { width: 14px; height: 14px; flex-shrink: 0; }
+.dev-credit .dev-link.wpp { color: #25D366; border-color: rgba(37,211,102,0.35); }
+.dev-credit .dev-link.wpp svg { stroke: #25D366; }
+.dev-credit .dev-link.insta { color: #E1306C; border-color: rgba(225,48,108,0.35); }
+.dev-credit .dev-link.insta svg { stroke: #E1306C; }
+
 .checklist {
   display: flex;
   flex-direction: column;
