@@ -81,14 +81,90 @@
         <div class="section-title"><span class="bar"></span>Treino do dia</div>
         <button class="manage-btn" id="workout-manage-btn" onclick="toggleManageMode('workout')">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
-          Gerenciar
+          Tipos de treino
         </button>
       </div>
       <div class="tabs-row" id="tabs-row"></div>
-      <div id="exercise-list"></div>
-      <div class="finish-bar">
-        <button class="btn-primary" onclick="finishWorkout()">Concluir treino de hoje</button>
+      <div class="field-hint workout-manage-hint" id="workout-manage-hint" hidden>
+        Crie ou renomeie tipos de treino, remova exercícios apenas deste treino ou escolha itens do catálogo Pré-definidos.
       </div>
+      <div id="exercise-list"></div>
+    </section>
+    <!-- DETALHES DO EXERCÍCIO -->
+    <section class="screen" id="screen-exercise">
+      <button class="btn-secondary exercise-exit" type="button" onclick="closeExerciseDetail()">← Sair do exercício</button>
+      <div class="exercise-detail-card">
+        <img class="exercise-detail-image" src="4929985-training-icon-on-white-linear-style-vetor.jpg" alt="Ilustração de treino">
+        <video class="exercise-detail-video" muted loop playsinline preload="none" hidden></video>
+        <div class="exercise-detail-workout" id="exercise-detail-workout"></div>
+        <h1 class="exercise-detail-title" id="exercise-detail-title"></h1>
+        <div class="exercise-detail-meta" id="exercise-detail-meta"></div>
+        <p class="exercise-detail-description" id="exercise-detail-description"></p>
+        <div class="field-group exercise-metric-group">
+          <label class="field-label" for="exercise-metric">O que deseja registrar?</label>
+          <select class="field-input" id="exercise-metric" onchange="updateExerciseMetric()">
+            <option value="kg">Carga (kg)</option>
+            <option value="min">Tempo (minutos)</option>
+          </select>
+        </div>
+        <div class="field-group">
+          <label class="field-label" id="exercise-value-label" for="exercise-value">Carga utilizada</label>
+          <div class="load-input-wrap">
+            <input class="exercise-value-input" type="number" inputmode="decimal" id="exercise-value" min="0.1" step="0.1" placeholder="Ex: 20">
+            <span id="exercise-value-unit">kg</span>
+          </div>
+        </div>
+        <div class="last-load exercise-detail-last-load" id="exercise-detail-last-load"></div>
+        <button class="btn-primary exercise-complete-btn" type="button" onclick="completeCurrentExercise()">Concluir exercício</button>
+      </div>
+    </section>
+
+    <!-- TEMPORIZADOR -->
+    <section class="screen" id="screen-temporizador">
+      <div class="section-title" style="margin-top:4px;"><span class="bar"></span>Temporizador de exercício</div>
+      <div class="timer-card">
+        <div class="field-group">
+          <label class="field-label" for="timer-exercise-select">Exercício</label>
+          <div class="select-wrap">
+            <select id="timer-exercise-select"></select>
+          </div>
+        </div>
+        <div class="timer-duration">
+          <div class="field-group">
+            <label class="field-label" for="timer-minutes">Minutos</label>
+            <input class="field-input" type="number" id="timer-minutes" min="0" max="1439" step="1" value="0" inputmode="numeric">
+          </div>
+          <div class="field-group">
+            <label class="field-label" for="timer-seconds">Segundos</label>
+            <input class="field-input" type="number" id="timer-seconds" min="0" max="59" step="1" value="30" inputmode="numeric">
+          </div>
+        </div>
+        <div class="timer-clock" id="timer-clock" role="timer" aria-label="Tempo restante">
+          <div class="timer-clock-inner">
+            <span class="timer-clock-label">Restante</span>
+            <strong id="timer-remaining">00:30</strong>
+            <span class="timer-clock-elapsed-label">Decorrido <b id="timer-elapsed">00:00</b></span>
+          </div>
+        </div>
+        <div class="timer-status" id="timer-status" aria-live="polite">Pronto para começar</div>
+        <div class="timer-actions">
+          <button class="btn-primary" id="timer-start-btn" type="button" onclick="toggleWorkoutTimer()">Iniciar timer</button>
+          <button class="btn-secondary" id="timer-reset-btn" type="button" onclick="resetWorkoutTimer()">Zerar</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- CATÁLOGO DE EXERCÍCIOS -->
+    <section class="screen" id="screen-predefinido">
+      <div class="section-title-row" style="margin-top:4px;">
+        <div class="section-title"><span class="bar"></span>Catálogo de exercícios</div>
+        <button class="manage-btn" type="button" onclick="openModal('predefined', null)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+          Novo exercício
+        </button>
+      </div>
+      <div class="field-hint">Cadastre exercícios aqui para depois adicioná-los aos treinos. Cada exercício pode ter séries, repetições, um GIF e uma instrução curta.</div>
+      <div class="predefined-exercise-list" id="predefined-exercise-list"></div>
     </section>
 
     <!-- PRE-TREINO -->
@@ -120,6 +196,20 @@
       </div>
       <div class="section-title"><span class="bar"></span>Histórico completo</div>
       <div id="history-container"></div>
+      <div class="dev-credit">
+        <div class="made-by">Desenvolvido por</div>
+        <div class="dev-name">Davi Gomes Oliveira</div>
+        <div class="dev-links">
+          <a class="dev-link wpp" href="https://wa.me/5565981044637" target="_blank" rel="noopener">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M20 12a8 8 0 1 1-3.5-6.6M12 8v4l2 2"/></svg>
+            (65) 98104-4637
+          </a>
+          <a class="dev-link insta" href="https://instagram.com/davi.ti.ads" target="_blank" rel="noopener">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1"/></svg>
+            @davi.ti.ads
+          </a>
+        </div>
+      </div>
     </section>
 
   </main>
@@ -133,13 +223,21 @@
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 7v10M4 9v6M20 7v10M22 9v6M6 12h12"/></svg>
       Treino
     </button>
-    <button class="nav-btn" data-screen="pretreino" onclick="switchScreen('pretreino')">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>
-      Pré-treino
+    <button class="nav-btn" data-screen="temporizador" onclick="switchScreen('temporizador')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2.5 1.5M9 2h6M12 2v3M19 6l1.5-1.5"/></svg>
+      Temporizador
     </button>
     <button class="nav-btn" data-screen="progress" onclick="switchScreen('progress')">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19V10M11 19V4M18 19v-7"/></svg>
       Progresso
+    </button>
+    <button class="nav-btn" data-screen="pretreino" onclick="switchScreen('pretreino')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="4" width="14" height="18" rx="2"/><path d="M9 4.5h6M8 11l1.5 1.5L12 10M14 12h2M8 17l1.5 1.5L12 16M14 18h2"/></svg>
+      Rotina
+    </button>
+    <button class="nav-btn" data-screen="predefinido" onclick="switchScreen('predefinido')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 7v10M4 9v6M20 7v10M22 9v6M6 12h12"/></svg>
+      Pré-definidos
     </button>
   </nav>
 
@@ -164,6 +262,17 @@
         <input class="field-input" type="text" id="field-detail" placeholder="Ex: 10 min em ritmo confortável">
       </div>
 
+      <div class="field-group gif-url-group" id="field-gif-group" style="display:none;">
+        <label class="field-label" for="field-gif-url">URL do vídeo ou GIF de execução</label>
+        <input class="field-input" type="url" id="field-gif-url" placeholder="Cole aqui a URL do .mp4 ou .gif" autocomplete="url">
+        <div class="field-hint">Prefira um link de vídeo (.mp4) — ele carrega muito mais rápido que um GIF. Campo em destaque, pode ser preenchido depois.</div>
+      </div>
+
+      <div class="field-group" id="field-description-group" style="display:none;">
+        <label class="field-label" for="field-description">Como executar</label>
+        <textarea class="field-input field-textarea" id="field-description" rows="3" maxlength="240" placeholder="Escreva uma instrução curta para executar o exercício"></textarea>
+      </div>
+
       <div class="field-row" id="field-exercise-row" style="display:none;">
         <div class="field-group">
           <label class="field-label">Séries</label>
@@ -186,6 +295,21 @@
         <button class="btn-primary" onclick="saveModal()">Salvar</button>
       </div>
       <button class="btn-delete" id="modal-delete-btn" onclick="deleteModalItem()" style="display:none;">Excluir</button>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="exercise-picker-overlay">
+    <div class="modal-sheet">
+      <div class="modal-title">Adicionar exercício ao treino</div>
+      <div class="field-group">
+        <label class="field-label" for="exercise-picker-select">Exercício pré-definido</label>
+        <select class="field-input" id="exercise-picker-select"></select>
+      </div>
+      <div class="field-hint" id="exercise-picker-hint"></div>
+      <div class="modal-actions">
+        <button class="btn-secondary" type="button" onclick="closeExercisePicker()">Cancelar</button>
+        <button class="btn-primary" type="button" id="exercise-picker-add" onclick="addPredefinedExerciseToWorkout()">Adicionar</button>
+      </div>
     </div>
   </div>
 </div>
