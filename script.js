@@ -93,7 +93,7 @@ const DEFAULT_PREDEFINED_EXERCISES = [
     name: "Agachamento ",
     series: 3,
     reps: "8-10",
-    gifUrl: "https://i.pinimg.com/originals/d9/1c/3a/d91c3ab18a7673bc33d37caac1a669bd.gif",
+    gifUrl: "http://localhost:4000/videos/agachamento.mp4",    
     description: `Ajuste a barra no suporte na altura dos seus ombros. Entre debaixo dela e 
     apoie-a firmemente sobre o músculo trapézio (nunca sobre as vértebras do pescoço). Segure 
     a barra com as mãos um pouco além da largura dos ombros, estenda as pernas para tirá-la do 
@@ -105,7 +105,7 @@ const DEFAULT_PREDEFINED_EXERCISES = [
     name: "Supino reto",
     series: 3,
     reps: "8-10",
-    gifUrl: "https://i.pinimg.com/originals/f2/3b/e9/f23be9a08d0cfa3b40edaaad079dff93.gif",
+    gifUrl: "http://localhost:4000/videos/supino-reto.mp4",
     description: `1. eus olhos devem ficar alinhados diretamente abaixo da barra. Mantenha 
     os pés firmemente apoiados no chão para garantir estabilidade."Desça a barra com controle 
     e empurre até estender os braços.
@@ -118,8 +118,11 @@ const DEFAULT_PREDEFINED_EXERCISES = [
     name: "Desenvolvimento de ombro",
     series: 3,
     reps: "8-10",
-    gifUrl: "https://i.pinimg.com/originals/cf/d8/bb/cfd8bb045555b4caae3ba0138640fb26.gif",
-    description: ``
+    gifUrl: "http://localhost:4000/videos/desenvolvimento-ombro.mp4",
+    description: `1. Ajuste do Banco: Posicione o banco inclinado levemente para trás (cerca de 75º a 80º) em vez de deixá-lo 
+    totalmente reto a 90º. Isso diminui a pressão na lombar e respeita a anatomia do ombro.
+    2. Posição Inicial: Sente-se com o quadril bem encostado atrás e mantenha os pés firmes no chão. Mantenha o abdômen contraído 
+    para estabilizar a coluna.`
   },
 ];
 
