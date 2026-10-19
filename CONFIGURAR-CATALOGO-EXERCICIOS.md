@@ -13,12 +13,16 @@ Este guia explica como definir exercícios iniciais no catálogo **Pré-definido
   name: "Supino reto",
   series: 3,
   reps: "8-10",
-  gifUrl: "https://seu-site-publico.com/videos/supino-reto.mp4",
+  gifUrl: "videos/supino-reto.mp4",
   description: "Desça a barra com controle e empurre até estender os braços.",
 },
 ```
 
-**Prefira vídeo (.mp4) a GIF.** O campo `gifUrl` aceita os dois — o app decide como exibir pela extensão do arquivo (`.mp4`, `.webm`, `.mov`, `.m4v` abrem como vídeo; qualquer outra extensão abre como imagem/GIF). Um vídeo .mp4 com a mesma animação costuma pesar 10-20x menos que o GIF equivalente, carrega mais rápido e usa menos bateria, porque o celular decodifica vídeo em hardware. Para gerar um .mp4 leve a partir de um vídeo ou GIF existente, use o ffmpeg:
+O campo `gifUrl` aceita GIFs, imagens e vídeos. O app exibe arquivos `.mp4`, `.webm`, `.mov`, `.m4v` e `.ogv` como vídeos; os demais formatos são tratados como imagens/GIFs. Os vídeos são reproduzidos sem som e em loop.
+
+Para usar arquivos do próprio projeto, coloque-os na pasta `videos/` e informe um caminho relativo, por exemplo `videos/supino-reto.mp4`. Não use `http://localhost/...`: esse endereço só existe no seu computador e não funciona para quem visita o site publicado. Publique os arquivos de mídia junto com a aplicação, preservando a pasta e os nomes. Também é possível usar uma URL pública direta `https://...`, acessível sem login.
+
+**Prefira vídeo (.mp4) a GIF.** Um vídeo .mp4 com a mesma animação costuma pesar 10-20x menos que o GIF equivalente, carrega mais rápido e usa menos bateria, porque o celular decodifica vídeo em hardware. Para gerar um .mp4 leve a partir de um vídeo ou GIF existente, use o ffmpeg:
 
 ```
 ffmpeg -i entrada.mp4 -vf "scale=480:-2" -c:v libx264 -crf 28 -preset veryslow -pix_fmt yuv420p -movflags +faststart -an saida.mp4
@@ -33,7 +37,7 @@ const DEFAULT_PREDEFINED_EXERCISES = [
     name: "Supino reto",
     series: 3,
     reps: "8-10",
-    gifUrl: "https://seu-site-publico.com/gifs/supino-reto.gif",
+    gifUrl: "videos/supino-reto.mp4",
     description: "Desça a barra com controle e empurre até estender os braços.",
   },
   {
@@ -41,13 +45,13 @@ const DEFAULT_PREDEFINED_EXERCISES = [
     name: "Agachamento",
     series: 3,
     reps: "8-10",
-    gifUrl: "https://seu-site-publico.com/gifs/agachamento.gif",
+    gifUrl: "videos/agachamento.mp4",
     description: "",
   },
 ];
 ```
 
-Cada exercício precisa de um `id` diferente. Não altere nem reutilize IDs que já foram publicados: eles identificam o exercício no catálogo e nos treinos. Informe um número inteiro de séries, repetições como texto e uma URL pública `http://` ou `https://`. Use um endereço direto para o arquivo (vídeo ou GIF), acessível sem login e que permita incorporação em outros sites.
+Cada exercício precisa de um `id` diferente. Não altere nem reutilize IDs que já foram publicados: eles identificam o exercício no catálogo e nos treinos. Informe um número inteiro de séries, repetições como texto e um caminho relativo para a pasta local `videos/` ou uma URL pública `http://`/`https://` direta para o arquivo. Arquivos remotos devem ser acessíveis sem login e permitir incorporação em outros sites.
 
 Não altere `DEFAULT_WORKOUTS` para cadastrar exercícios: essa constante define os treinos iniciais vazios. Os exercícios iniciais são acrescentados a `state.predefinedExercises` durante a inicialização do app.
 
@@ -65,7 +69,7 @@ Também é possível cadastrar exercícios individuais na tela **Pré-definidos*
 
 1. Salve `script.js`.
 2. Teste localmente ou abra o app em uma aba anônima e confirme que os exercícios aparecem em **Pré-definidos**.
-3. Abra cada GIF para verificar se carrega; se não aparecer, confira se a URL aponta diretamente para uma imagem pública.
+3. Abra o catálogo e confira se cada vídeo ou GIF carrega. Confirme se o arquivo existe no caminho informado e, para mídia remota, se a URL aponta diretamente para o arquivo e é acessível sem login.
 4. Para que outras pessoas recebam o catálogo inicial atualizado, publique a versão atualizada da aplicação no serviço de hospedagem.
 5. Abra a versão publicada e confira o catálogo. Se estiver vendo uma versão antiga, confirme que a publicação terminou e faça uma recarga forçada da página.
 

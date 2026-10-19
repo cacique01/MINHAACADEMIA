@@ -785,7 +785,8 @@ nav.bottom-nav {
   font-weight: 700;
 }
 .predefined-gif-placeholder[hidden],
-.predefined-exercise-gif[hidden] { display: none; }
+.predefined-exercise-gif[hidden],
+.predefined-exercise-video[hidden] { display: none; }
 .predefined-video-badge {
   position: absolute;
   top: 8px;

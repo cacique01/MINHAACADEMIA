@@ -9,7 +9,7 @@ Aplicação web em português para organizar treinos, acompanhar a rotina pré-t
 | [`index.html`](./index.html) | Estrutura da página, metadados, áreas de conteúdo, navegação, janelas de edição e importações. |
 | [`style.css`](./style.css) | Tema visual, disposição dos componentes, estados ativos e adaptação a diferentes telas. |
 | [`script.js`](./script.js) | Dados iniciais, persistência, navegação, renderização, edição, registros de carga, instalação PWA e contador Firebase. |
-| [`CONFIGURAR-CATALOGO-EXERCICIOS.md`](./CONFIGURAR-CATALOGO-EXERCICIOS.md) | Passo a passo para definir exercícios e GIFs padrão do catálogo para todas as pessoas. |
+| [`CONFIGURAR-CATALOGO-EXERCICIOS.md`](./CONFIGURAR-CATALOGO-EXERCICIOS.md) | Passo a passo para definir exercícios e mídias (vídeos ou GIFs) padrão do catálogo para todas as pessoas. |
 | `4929985-training-icon-on-white-linear-style-vetor.jpg` | Imagem disponível no diretório. O HTML atual não a referencia; os ícones visíveis da interface são principalmente SVGs incorporados no próprio HTML. |
 
 Não há um processo de compilação ou dependências locais definidos nesses arquivos. A página carrega as fontes e as bibliotecas Firebase por URLs externas.
@@ -111,8 +111,8 @@ O HTML usa `header` como estrutura semântica de cabeçalho da aplicação; as c
 
 #### `#screen-predefinido` — Catálogo de exercícios
 
-- Catálogo para cadastrar e editar exercícios com séries, repetições, URL de GIF e uma descrição curta da execução.
-- O campo para URL de GIF fica destacado e pode ser preenchido depois.
+- Catálogo para cadastrar e editar exercícios com séries, repetições, URL de mídia (vídeo ou GIF) e uma descrição curta da execução.
+- Vídeos locais devem ficar em `videos/` e usar caminhos relativos, como `videos/agachamento.mp4`; não use endereços `localhost` no site publicado.
 - No modo **Tipos de treino**, é possível adicionar exercícios do catálogo ou remover um exercício apenas do treino selecionado. Essa remoção não apaga o exercício de Pré-definidos.
 - Os Treinos 1 e 2 começam vazios. Na primeira abertura da versão atualizada, os IDs dos exercícios padrão antigos (`a1`–`a6` e `b1`–`b7`) são removidos uma vez desses treinos, sem remover os itens do catálogo Pré-definidos. Exercícios personalizados existentes são preservados.
 - A exclusão pela tela do catálogo remove o exercício também dos treinos em que foi usado.
@@ -217,11 +217,11 @@ O `box-sizing: border-box` global (`*`) faz com que padding e borda sejam inclu�
 - `.tabs-row` coloca as abas lado a lado. `.tab-pill` distribui a largura, centraliza o rótulo e indica o estado selecionável. `.tab-pill.active` usa fundo e borda laranja para mostrar o treino selecionado.
 - `.tab-pill-wrap` permite posicionar os controles de gerenciamento do tipo de treino. `.workout-type-edit` abre a edição do nome, `.tab-del` remove o tipo (mantendo seus registros históricos), e `.tab-add` cria um tipo com nome livre.
 - `.exercise-card` é o cartão selecionável de cada exercício. `.exercise-head` alinha nome e metadados; `.exercise-name` e `.exercise-meta` separam destaque do nome e informação compacta de séries/repetições. `.exercise-open-hint` mostra o estado individual e o último registro.
-- `.exercise-detail-card` contém os dados e controles do exercício selecionado; `.exercise-detail-image` exibe a ilustração e `.exercise-detail-workout` identifica o treino associado.
+- `.exercise-detail-card` contém os dados e controles do exercício selecionado; `.exercise-detail-image` exibe uma imagem/GIF ou ilustração alternativa, `.exercise-detail-video` exibe vídeos e `.exercise-detail-workout` identifica o treino associado.
 - `.exercise-detail-description` mostra a orientação cadastrada no catálogo para a execução do exercício.
 - `.load-input-wrap` agrupa o campo numérico e a unidade. O seletor permite registrar carga em kg ou duração em minutos; `.exercise-exit` volta à lista sem concluir, e `.exercise-complete-btn` salva somente o exercício aberto.
 - `.last-load` e `.last-load b` estilizam a indicação do último registro.
-- `.predefined-exercise-card` apresenta os exercícios do catálogo, incluindo a prévia do GIF ou um aviso para inserir a URL depois. `.gif-url-group` destaca esse campo no formulário.
+- `.predefined-exercise-card` apresenta os exercícios do catálogo, incluindo a prévia de vídeo/GIF ou um aviso quando a mídia não está disponível. `.gif-url-group` destaca o campo de URL da mídia no formulário.
 - `.timer-card` e `.timer-duration` organizam os controles do temporizador. `.timer-clock` desenha o relógio circular, cuja borda acompanha o progresso; `.timer-actions` alinha os controles de iniciar/pausar e zerar.
 - `.btn-primary` é o botão principal laranja, em largura total, com sombra e letras maiúsculas; `.btn-secondary` é a alternativa azul contornada. Ambos têm dimensões e pesos tipográficos adequados a controles de toque. `.modal-actions .btn-primary` remove a sombra dentro do modal.
 

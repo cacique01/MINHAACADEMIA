@@ -93,36 +93,183 @@ const DEFAULT_PREDEFINED_EXERCISES = [
     name: "Agachamento ",
     series: 3,
     reps: "8-10",
-    gifUrl: "http://localhost:4000/videos/agachamento.mp4",    
-    description: `Ajuste a barra no suporte na altura dos seus ombros. Entre debaixo dela e 
-    apoie-a firmemente sobre o músculo trapézio (nunca sobre as vértebras do pescoço). Segure 
-    a barra com as mãos um pouco além da largura dos ombros, estenda as pernas para tirá-la do 
-    suporte e dê dois passos curtos para trás.
-     Afaste os pés aproximadamente na largura do quadril ou ombros. Gire as pontas dos pés levemente para fora`,
-  },
-  {
+    gifUrl: "videos/agachamento.mp4",
+    description: ``,
+  },{
+    id: "catalogo-cadeira-abdutora",
+    name: "Cadeira abdutora",
+    series: 3,
+    reps: "8-10",
+    gifUrl: "videos/cadeira-abdutora.mp4",
+    description: ``
+  },{
+    id: "catalogo-cadeira-adutora",
+    name: "Cadeira adutora",
+    series: 3,
+    reps: "8-10",
+    gifUrl: "videos/cadeira-adutora.mp4",
+    description: ``
+  },{
+    id: "catalogo-cadeira-extensora",
+    name: "Cadeira extensora",
+    series: 3,
+    reps: "8-10",
+    gifUrl: "videos/cadeira-extensora.mp4",
+    description: ``
+  },{
+    id: "catalogo-crucifixo",
+    name: "Crucifixo",
+    series: 3,
+    reps: "8-10",
+    gifUrl: "videos/crucifixo.mp4",
+    description: ``
+  },{
+    id: "catalogo-elevacao-lateral-halteres",
+    name: "Elevação Lateral de Ombro",
+    series: 3,
+    reps: "8-10",
+    gifUrl: "videos/elevacao-lateral-hateres.mp4",
+    description: ``
+  },{
+    id: "catalogo-elevacao-panturrilha-sentado",
+    name: "Elevação de Panturrilha Sentado",
+    series: 3,
+    reps: "8-10",
+    gifUrl: "videos/elevacao-panturrilha-sentado.mp4",
+    description: ``
+  },{
+    id: "catalogo-hiperextensao-lombar",
+    name: "Hiperextensão Lombar",
+    series: 3,
+    reps: "8-10",
+    gifUrl: "videos/hiperextensao-lombar.mp4",
+    description: ``
+  },{
+    id: "catalogo-leg-press-horizontal",
+    name: "Leg Press Horizontal",
+    series: 3,
+    reps: "8-10",
+    gifUrl: "videos/leg-press-horizontal.mp4",
+    description: ``
+  },{
+    id: "catalogo-mesa-flexora",
+    name: "Mesa flexora",
+    series: 3,
+    reps: "8-10",
+    gifUrl: "videos/mesa-flexora.mp4",
+    description: ``
+  },{
+    id: "catalogo-ombro-halteres",
+    name: "Desenvolvimento de ombro sentado",
+    series: 3,
+    reps: "8-10",
+    gifUrl: "videos/ombro-halteres.mp4",
+    description: ``
+  },{
+    id: "catalogo-panturrilha-em-pe",
+    name: "Elevação de Panturrilha em Pé",
+    series: 3,
+    reps: "8-10",
+    gifUrl: "videos/panturrilha-em-pe.mp4",
+    description: ``
+  },{
+    id: "catalogo-panturrilha-maquina",
+    name: "Elevação de Panturrilha na Máquina",
+    series: 3,
+    reps: "8-10",
+    gifUrl: "videos/panturrilha-maquina.mp4",
+    description: ``
+  },{
+    id: "catalogo-puxada-alta",
+    name: "Puxada Alta",
+    series: 3,
+    reps: "8-10",
+    gifUrl: "videos/puxada-alta.mp4",
+    description: ``
+  },{
+    id: "catalogo-remada-alta",
+    name: "Remada Alta",
+    series: 3,
+    reps: "8-10",
+    gifUrl: "videos/remada-alta.gif",
+    description: ``
+  },{
+    id: "catalogo-remada-baixa-maquina",
+    name: "Remada Baixa na Máquina",
+    series: 3,
+    reps: "8-10",
+    gifUrl: "videos/remada-baixa-maquina.mp4",
+    description: ``
+  },{
+    id: "catalogo-rosca-concentrada",
+    name: "Rosca Concentrada",
+    series: 3,
+    reps: "8-10",
+    gifUrl: "videos/rosca-concentrada.mp4",
+    description: ``
+  },{
+    id: "catalogo-rosca-direta",
+    name: "Rosca Direta",
+    series: 3,
+    reps: "8-10",
+    gifUrl: "videos/rosca-direta.mp4",
+    description: ``
+  },{
+    id: "catalogo-rosca-martelo",
+    name: "Rosca pegada Martelo",
+    series: 3,
+    reps: "8-10",
+    gifUrl: "videos/rosca-martelo.mp4",
+    description: ``
+  },{
+    id: "catalogo-rosca-punho",
+    name: "Rosca Punho",
+    series: 3,
+    reps: "8-10",
+    gifUrl: "videos/rosca-punho.mp4",
+    description: ``
+  },{
+    id: "catalogo-supino-declinado",
+    name: "Supino Declinado",
+    series: 3,
+    reps: "8-10",
+    gifUrl: "videos/supino-declinado.mp4",
+    description: ``
+  },{
+    id: "catalogo-supino-inclinado",
+    name: "Supino Inclinado",
+    series: 3,
+    reps: "8-10",
+    gifUrl: "videos/supino-inclinado.mp4",
+    description: ``
+  },{
     id: "catalogo-supino-reto",
-    name: "Supino reto",
+    name: "Supino Reto",
     series: 3,
     reps: "8-10",
-    gifUrl: "http://localhost:4000/videos/supino-reto.mp4",
-    description: `1. eus olhos devem ficar alinhados diretamente abaixo da barra. Mantenha 
-    os pés firmemente apoiados no chão para garantir estabilidade."Desça a barra com controle 
-    e empurre até estender os braços.
-    2. Segure a barra com uma pegada pronada (palmas das mãos voltadas para a frente). A largura deve ser um pouco 
-    maior que a distância dos seus ombros, de modo que seus antebraços fiquem verticais (em um ângulo de 90° com a barra) 
-    quando ela atingir o peito.`
-  },
-  {
-    id: "catalogo-desenvolvimento-ombro",
-    name: "Desenvolvimento de ombro",
+    gifUrl: "videos/supino-reto.mp4",
+    description: ``
+  },{
+    id: "catalogo-triceps-francesa",
+    name: "Tríceps Francesa",
     series: 3,
     reps: "8-10",
-    gifUrl: "http://localhost:4000/videos/desenvolvimento-ombro.mp4",
-    description: `1. Ajuste do Banco: Posicione o banco inclinado levemente para trás (cerca de 75º a 80º) em vez de deixá-lo 
-    totalmente reto a 90º. Isso diminui a pressão na lombar e respeita a anatomia do ombro.
-    2. Posição Inicial: Sente-se com o quadril bem encostado atrás e mantenha os pés firmes no chão. Mantenha o abdômen contraído 
-    para estabilizar a coluna.`
+    gifUrl: "videos/triceps-frances.mp4",
+    description: ``
+  },{
+    id: "catalogo-triceps-inverso",
+    name: "Tricéps Inverso",
+    series: 3,
+    reps: "8-10",
+    gifUrl: "videos/triceps-inverso.mp4",
+    description: ``
+  },{
+    id: "catalogo-triceps",
+    name: "Tricéps na Polia",
+    series: 3,
+    reps: "8-10",
+    gifUrl: "videos/triceps.mp4",
+    description: ``
   },
 ];
 
@@ -732,17 +879,40 @@ function openExerciseDetail(exId, workoutTag) {
   currentExercise = { exId, workoutTag };
   const last = getLastLoad(exId);
   const exerciseImage = document.querySelector(".exercise-detail-image");
+  const exerciseVideo = document.querySelector(".exercise-detail-video");
   const gifUrl = getSafeGifUrl(exercise.gifUrl);
-  exerciseImage.src =
-    gifUrl || "4929985-training-icon-on-white-linear-style-vetor.jpg";
-  exerciseImage.onerror = () => {
-    exerciseImage.onerror = null;
-    exerciseImage.src = "4929985-training-icon-on-white-linear-style-vetor.jpg";
-  };
+  const fallbackImage = "4929985-training-icon-on-white-linear-style-vetor.jpg";
+  exerciseVideo.pause();
+  exerciseVideo.removeAttribute("src");
+  exerciseVideo.hidden = true;
+  exerciseVideo.onerror = null;
+  exerciseImage.hidden = false;
+  if (gifUrl && isVideoMediaUrl(gifUrl)) {
+    exerciseImage.hidden = true;
+    exerciseVideo.muted = true;
+    exerciseVideo.autoplay = true;
+    exerciseVideo.onerror = () => {
+      exerciseVideo.onerror = null;
+      exerciseVideo.pause();
+      exerciseVideo.hidden = true;
+      exerciseImage.hidden = false;
+      exerciseImage.src = fallbackImage;
+    };
+    exerciseVideo.src = gifUrl;
+    exerciseVideo.hidden = false;
+    exerciseVideo.load();
+  } else {
+    exerciseImage.src = gifUrl || fallbackImage;
+    exerciseImage.onerror = () => {
+      exerciseImage.onerror = null;
+      exerciseImage.src = fallbackImage;
+    };
+  }
   document.getElementById("exercise-detail-workout").textContent =
     getWorkoutName(workoutTag).toLocaleUpperCase("pt-BR");
   document.getElementById("exercise-detail-title").textContent = exercise.name;
   exerciseImage.alt = "Execução do exercício " + exercise.name;
+  exerciseVideo.setAttribute("aria-label", "Vídeo de execução de " + exercise.name);
   document.getElementById("exercise-detail-description").textContent =
     exercise.description || "Instruções de execução ainda não cadastradas.";
   document.getElementById("exercise-detail-meta").textContent =
@@ -1070,11 +1240,24 @@ function addPredefinedExerciseToWorkout() {
 function getSafeGifUrl(value) {
   if (!value) return "";
   try {
-    const url = new URL(value);
-    return url.protocol === "https:" || url.protocol === "http:" ? url.href : "";
+    const url = new URL(value, document.baseURI);
+    if (url.protocol !== "https:" && url.protocol !== "http:") return "";
+    if (
+      ["localhost", "127.0.0.1", "::1"].includes(url.hostname) &&
+      url.pathname.startsWith("/videos/")
+    ) {
+      return new URL(
+        url.pathname.slice(1) + url.search + url.hash,
+        document.baseURI,
+      ).href;
+    }
+    return url.href;
   } catch (error) {
     return "";
   }
+}
+function isVideoMediaUrl(value) {
+  return /\.(mp4|m4v|webm|ogv|mov)$/i.test(new URL(value).pathname);
 }
 function renderPredefinedExercises() {
   const container = document.getElementById("predefined-exercise-list");
@@ -1091,24 +1274,42 @@ function renderPredefinedExercises() {
   state.predefinedExercises.forEach((exercise) => {
     const card = document.createElement("article");
     card.className = "predefined-exercise-card";
-    const preview = document.createElement("img");
-    preview.className = "predefined-exercise-gif";
-    preview.alt = "GIF de execução de " + exercise.name;
-    preview.loading = "lazy";
     const safeUrl = getSafeGifUrl(exercise.gifUrl);
-    if (safeUrl) {
-      preview.src = safeUrl;
-      preview.onerror = () => {
-        preview.hidden = true;
-        gifPlaceholder.hidden = false;
-      };
+    const isVideo = Boolean(safeUrl && isVideoMediaUrl(safeUrl));
+    const preview = document.createElement(isVideo ? "video" : "img");
+    preview.className = isVideo
+      ? "predefined-exercise-video"
+      : "predefined-exercise-gif";
+    preview.setAttribute(
+      "aria-label",
+      (isVideo ? "Vídeo" : "GIF") + " de execução de " + exercise.name,
+    );
+    if (isVideo) {
+      preview.muted = true;
+      preview.loop = true;
+      preview.autoplay = true;
+      preview.playsInline = true;
+      preview.preload = "none";
     } else {
-      preview.hidden = true;
+      preview.alt = "GIF de execução de " + exercise.name;
+      preview.loading = "lazy";
     }
     const gifPlaceholder = document.createElement("div");
     gifPlaceholder.className = "predefined-gif-placeholder";
-    gifPlaceholder.textContent = "URL do GIF ainda não informada";
+    gifPlaceholder.textContent = "Mídia do exercício não cadastrada.";
     gifPlaceholder.hidden = Boolean(safeUrl);
+    if (safeUrl) {
+      preview.onerror = () => {
+        preview.hidden = true;
+        gifPlaceholder.textContent =
+          "Não foi possível carregar a mídia do exercício.";
+        gifPlaceholder.hidden = false;
+      };
+      preview.src = safeUrl;
+      preview.hidden = false;
+    } else {
+      preview.hidden = true;
+    }
     const content = document.createElement("div");
     content.className = "predefined-exercise-content";
     const heading = document.createElement("div");
