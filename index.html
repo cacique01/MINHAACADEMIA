@@ -132,11 +132,11 @@
         <div class="timer-duration">
           <div class="field-group">
             <label class="field-label" for="timer-minutes">Minutos</label>
-            <input class="field-input" type="number" id="timer-minutes" min="0" max="1439" step="1" value="0" inputmode="numeric">
+            <input class="field-input" type="number" id="timer-minutes" min="0" max="1439" step="1" value="0" inputmode="numeric" oninput="updateWorkoutTimerDisplay()">
           </div>
           <div class="field-group">
             <label class="field-label" for="timer-seconds">Segundos</label>
-            <input class="field-input" type="number" id="timer-seconds" min="0" max="59" step="1" value="30" inputmode="numeric">
+            <input class="field-input" type="number" id="timer-seconds" min="0" max="59" step="1" value="30" inputmode="numeric" oninput="updateWorkoutTimerDisplay()">
           </div>
         </div>
         <div class="timer-clock" id="timer-clock" role="timer" aria-label="Tempo restante">
@@ -151,6 +151,7 @@
           <button class="btn-primary" id="timer-start-btn" type="button" onclick="toggleWorkoutTimer()">Iniciar timer</button>
           <button class="btn-secondary" id="timer-reset-btn" type="button" onclick="resetWorkoutTimer()">Zerar</button>
         </div>
+        <button class="btn-secondary timer-notification-btn" id="timer-notification-btn" type="button" onclick="enableWorkoutTimerNotifications()">Ativar notificações ao terminar</button>
       </div>
     </section>
 

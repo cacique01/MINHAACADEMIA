@@ -108,6 +108,7 @@ O HTML usa `header` como estrutura semântica de cabeçalho da aplicação; as c
 - Campos para definir minutos e segundos (de 1 segundo até 23h59m59s).
 - Relógio circular que mostra o tempo restante em contagem regressiva e o tempo decorrido em contagem crescente.
 - Controles para iniciar, pausar, continuar e zerar o temporizador.
+- Ao terminar, mostra um aviso no app, vibra quando compatível e envia uma notificação do navegador se a pessoa ativar essa permissão.
 
 #### `#screen-predefinido` — Catálogo de exercícios
 
@@ -222,7 +223,7 @@ O `box-sizing: border-box` global (`*`) faz com que padding e borda sejam inclu�
 - `.load-input-wrap` agrupa o campo numérico e a unidade. O seletor permite registrar carga em kg ou duração em minutos; `.exercise-exit` volta à lista sem concluir, e `.exercise-complete-btn` salva somente o exercício aberto.
 - `.last-load` e `.last-load b` estilizam a indicação do último registro.
 - `.predefined-exercise-card` apresenta os exercícios do catálogo, incluindo a prévia de vídeo/GIF ou um aviso quando a mídia não está disponível. `.gif-url-group` destaca o campo de URL da mídia no formulário.
-- `.timer-card` e `.timer-duration` organizam os controles do temporizador. `.timer-clock` desenha o relógio circular, cuja borda acompanha o progresso; `.timer-actions` alinha os controles de iniciar/pausar e zerar.
+- `.timer-card` e `.timer-duration` organizam os controles do temporizador. `.timer-clock` desenha o relógio circular, cuja borda acompanha o progresso; `.timer-actions` alinha os controles de iniciar/pausar e zerar; `.timer-notification-btn` ocupa a largura disponível para ativar os avisos de conclusão.
 - `.btn-primary` é o botão principal laranja, em largura total, com sombra e letras maiúsculas; `.btn-secondary` é a alternativa azul contornada. Ambos têm dimensões e pesos tipográficos adequados a controles de toque. `.modal-actions .btn-primary` remove a sombra dentro do modal.
 
 #### 7. Grade semanal e seleção de exercício

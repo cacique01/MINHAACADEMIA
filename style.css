@@ -530,6 +530,11 @@ body.exercise-detail-open nav.bottom-nav { display: none; }
 .timer-actions .btn-secondary {
   width: 100%;
 }
+.timer-notification-btn {
+  width: 100%;
+  margin-top: 10px;
+}
+.timer-notification-btn[hidden] { display: none; }
 
 .week-grid {
   display: grid;

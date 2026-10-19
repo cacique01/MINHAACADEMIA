@@ -1002,7 +1002,67 @@ let workoutTimer = {
   startedAt: null,
   running: false,
   completed: false,
+  exerciseName: "",
 };
+function updateTimerNotificationButton() {
+  const button = document.getElementById("timer-notification-btn");
+  if (!button) return;
+  if (!window.isSecureContext || typeof Notification === "undefined") {
+    if (!button.hidden) button.hidden = true;
+    return;
+  }
+  const label =
+    Notification.permission === "granted"
+      ? "Notificações ativadas"
+      : Notification.permission === "denied"
+        ? "Notificações bloqueadas no navegador"
+        : "Ativar notificações ao terminar";
+  if (button.hidden) button.hidden = false;
+  button.disabled = Notification.permission !== "default";
+  if (button.textContent !== label) button.textContent = label;
+}
+async function enableWorkoutTimerNotifications() {
+  if (!window.isSecureContext || typeof Notification === "undefined") {
+    showToast("Notificações não são compatíveis com este navegador");
+    updateTimerNotificationButton();
+    return;
+  }
+  try {
+    await Notification.requestPermission();
+    updateTimerNotificationButton();
+    if (Notification.permission === "granted") {
+      showToast("Notificações ativadas");
+    } else if (Notification.permission === "denied") {
+      showToast("Notificações bloqueadas nas configurações do navegador");
+    }
+  } catch (error) {
+    console.warn("Não foi possível ativar as notificações do temporizador", error);
+    showToast("Não foi possível ativar as notificações");
+  }
+}
+function notifyWorkoutTimerCompleted() {
+  const exerciseName = workoutTimer.exerciseName;
+  const message = exerciseName
+    ? exerciseName + ": tempo concluído!"
+    : "Tempo do temporizador concluído!";
+  showToast(message);
+  if (typeof navigator.vibrate === "function") navigator.vibrate([250, 100, 250]);
+  if (typeof Notification === "undefined" || Notification.permission !== "granted") {
+    return;
+  }
+  try {
+    const notification = new Notification("Temporizador concluído", {
+      body: message,
+      tag: "workout-timer",
+    });
+    notification.onclick = () => {
+      window.focus();
+      notification.close();
+    };
+  } catch (error) {
+    console.warn("Não foi possível exibir a notificação do temporizador", error);
+  }
+}
 function renderTimerExerciseSelect() {
   const select = document.getElementById("timer-exercise-select");
   if (!select) return;
@@ -1054,21 +1114,39 @@ function formatTimerTime(milliseconds, roundUp = false) {
     ? pad(hours) + ":" + pad(minutes) + ":" + pad(seconds)
     : pad(minutes) + ":" + pad(seconds);
 }
+function getConfiguredWorkoutTimerDuration() {
+  const minutes = Number(document.getElementById("timer-minutes").value);
+  const seconds = Number(document.getElementById("timer-seconds").value);
+  if (
+    !Number.isInteger(minutes) ||
+    minutes < 0 ||
+    minutes > 1439 ||
+    !Number.isInteger(seconds) ||
+    seconds < 0 ||
+    seconds > 59
+  ) {
+    return 0;
+  }
+  return (minutes * 60 + seconds) * 1000;
+}
 function updateWorkoutTimerDisplay() {
+  updateTimerNotificationButton();
+  const displayDurationMs =
+    workoutTimer.durationMs || getConfiguredWorkoutTimerDuration();
   const elapsedMs = workoutTimer.running
     ? Math.min(
-        workoutTimer.durationMs,
+        displayDurationMs,
         workoutTimer.elapsedMs + (Date.now() - workoutTimer.startedAt),
       )
     : workoutTimer.elapsedMs;
-  const remainingMs = Math.max(0, workoutTimer.durationMs - elapsedMs);
+  const remainingMs = Math.max(0, displayDurationMs - elapsedMs);
   document.getElementById("timer-elapsed").textContent =
     formatTimerTime(elapsedMs);
   document.getElementById("timer-remaining").textContent =
     formatTimerTime(remainingMs, true);
   const progress =
-    workoutTimer.durationMs > 0
-      ? Math.min(100, (elapsedMs / workoutTimer.durationMs) * 100)
+    displayDurationMs > 0
+      ? Math.min(100, (elapsedMs / displayDurationMs) * 100)
       : 0;
   document
     .getElementById("timer-clock")
@@ -1101,6 +1179,7 @@ function updateWorkoutTimerDisplay() {
         : "Pronto para começar";
 }
 function tickWorkoutTimer() {
+  if (!workoutTimer.running || workoutTimer.completed) return;
   const elapsedMs =
     workoutTimer.elapsedMs + (Date.now() - workoutTimer.startedAt);
   if (elapsedMs >= workoutTimer.durationMs) {
@@ -1110,6 +1189,7 @@ function tickWorkoutTimer() {
     workoutTimer.startedAt = null;
     clearInterval(workoutTimer.intervalId);
     workoutTimer.intervalId = null;
+    notifyWorkoutTimerCompleted();
   }
   updateWorkoutTimerDisplay();
 }
@@ -1151,6 +1231,9 @@ function toggleWorkoutTimer() {
       return;
     }
     workoutTimer.durationMs = (minutes * 60 + seconds) * 1000;
+    workoutTimer.exerciseName =
+      document.getElementById("timer-exercise-select").selectedOptions[0]
+        ?.textContent || "";
   }
   workoutTimer.startedAt = Date.now();
   workoutTimer.running = true;
@@ -1166,9 +1249,15 @@ function resetWorkoutTimer() {
     startedAt: null,
     running: false,
     completed: false,
+    exerciseName: "",
   };
   updateWorkoutTimerDisplay();
 }
+document.addEventListener("visibilitychange", () => {
+  if (document.visibilityState === "visible" && workoutTimer.running) {
+    tickWorkoutTimer();
+  }
+});
 function openExercisePicker() {
   renderExercisePicker();
   document.getElementById("exercise-picker-overlay").classList.add("show");

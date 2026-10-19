@@ -76,7 +76,7 @@ A tela **Temporizador** permite selecionar qualquer exercício cadastrado nos tr
 
 Os controles permitem pausar, continuar e zerar. Enquanto a contagem está em andamento ou pausada, o exercício e a duração ficam bloqueados para evitar alterar uma sessão em curso; ao zerar, é possível escolher outro exercício e configurar outro tempo. A duração aceita valores de 1 segundo até 23h59m59s.
 
-O temporizador usa o instante atual para calcular o tempo transcorrido, em vez de somar os intervalos do navegador. Isso mantém a contagem correta mesmo quando o navegador atrasa a atualização visual. O timer continua contando ao navegar para outra tela, e termina automaticamente quando o tempo restante chega a zero. Ele não grava um registro de carga ou duração do exercício; serve como relógio de execução.
+O temporizador usa o instante atual para calcular o tempo transcorrido, em vez de somar os intervalos do navegador. Isso mantém a contagem correta mesmo quando o navegador atrasa a atualização visual. O timer continua contando ao navegar para outra tela e atualiza a contagem ao retornar à aba. Ao chegar a zero, mostra um aviso no app, vibra quando o dispositivo oferece suporte e envia uma notificação do navegador se a pessoa ativar a permissão pelo botão **Ativar notificações ao terminar**. A notificação do navegador depende de um contexto seguro (HTTPS ou localhost) e pode ser bloqueada nas configurações do navegador. O timer não grava um registro de carga ou duração do exercício; serve como relógio de execução.
 
 ## Catálogo Pré-definidos
 
