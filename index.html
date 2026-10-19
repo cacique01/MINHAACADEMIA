@@ -264,9 +264,15 @@
       </div>
 
       <div class="field-group gif-url-group" id="field-gif-group" style="display:none;">
-        <label class="field-label" for="field-gif-url">URL do vídeo ou GIF de execução</label>
-        <input class="field-input" type="url" id="field-gif-url" placeholder="Cole aqui a URL do .mp4 ou .gif" autocomplete="url">
-        <div class="field-hint">Prefira um link de vídeo (.mp4) — ele carrega muito mais rápido que um GIF. Campo em destaque, pode ser preenchido depois.</div>
+        <label class="field-label" for="field-gif-file">Arquivo de execução</label>
+        <input class="field-input" type="file" id="field-gif-file" accept=".mp4,.jpg,.jpeg,.png,.gif,video/mp4,image/jpeg,image/png,image/gif">
+        <div class="field-hint" id="field-media-hint">Formatos aceitos: MP4, JPG, PNG ou GIF. O arquivo fica salvo apenas neste navegador e dispositivo.</div>
+        <label class="field-label media-url-label" for="field-gif-url">Ou use uma URL</label>
+        <input class="field-input" type="url" id="field-gif-url" placeholder="Cole aqui a URL do vídeo ou imagem" autocomplete="url">
+        <label class="field-hint media-clear-option" id="field-media-current" hidden>
+          <input type="checkbox" id="field-clear-media">
+          Remover a mídia atual
+        </label>
       </div>
 
       <div class="field-group" id="field-description-group" style="display:none;">

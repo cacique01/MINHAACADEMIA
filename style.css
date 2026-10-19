@@ -846,6 +846,13 @@ nav.bottom-nav {
 }
 .gif-url-group .field-label { color: var(--orange); }
 .gif-url-group .field-input { border-color: var(--orange-dim); }
+.gif-url-group .media-url-label { margin-top: 14px; }
+.media-clear-option {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.media-clear-option[hidden] { display: none; }
 .field-textarea {
   min-height: 84px;
   resize: vertical;

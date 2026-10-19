@@ -8,7 +8,7 @@ Aplicação web em português para organizar treinos, acompanhar a rotina pré-t
 | --- | --- |
 | [`index.html`](./index.html) | Estrutura da página, metadados, áreas de conteúdo, navegação, janelas de edição e importações. |
 | [`style.css`](./style.css) | Tema visual, disposição dos componentes, estados ativos e adaptação a diferentes telas. |
-| [`script.js`](./script.js) | Dados iniciais, persistência, navegação, renderização, edição, registros de carga, instalação PWA e contador Firebase. |
+| [`script.js`](./script.js) | Dados iniciais, persistência local, navegação, renderização, edição, registros de carga, instalação PWA e contador Firebase. |
 | [`CONFIGURAR-CATALOGO-EXERCICIOS.md`](./CONFIGURAR-CATALOGO-EXERCICIOS.md) | Passo a passo para definir exercícios e mídias (vídeos ou GIFs) padrão do catálogo para todas as pessoas. |
 | `4929985-training-icon-on-white-linear-style-vetor.jpg` | Imagem disponível no diretório. O HTML atual não a referencia; os ícones visíveis da interface são principalmente SVGs incorporados no próprio HTML. |
 
@@ -66,6 +66,10 @@ Dois scripts são carregados pelo CDNJS antes do código principal:
 O `script.js` depende do objeto global `firebase` que esses scripts disponibilizam. Na aplicação, o Firebase não armazena os treinos ou o histórico pessoal: é usado somente para ler e incrementar um contador agregado de aberturas/uso. O código aponta para o documento `stats/usage` e consulta/atualiza o campo `opens`. O contador pode não aparecer ou não incrementar se a conexão, o documento ou as regras de segurança do Firestore não permitirem a operação; as demais funções do app usam armazenamento local.
 
 A configuração do projeto Firebase fica no início de `script.js`. Os valores de configuração enviados ao navegador identificam o projeto, mas não substituem as regras de segurança. As regras do Firestore devem restringir explicitamente as operações permitidas. As bibliotecas são externas, portanto requerem conexão com a internet.
+
+### Mídias dos exercícios
+
+No catálogo de exercícios, é possível escolher um arquivo MP4, JPG/JPEG, PNG ou GIF, ou continuar informando uma URL. Os arquivos escolhidos são guardados no IndexedDB do navegador; eles não são enviados ao Netlify nem ficam disponíveis em outros navegadores ou dispositivos. Limpar os dados do site no navegador também pode apagar esses arquivos. Para compartilhar uma mídia entre pessoas ou dispositivos, hospede-a em um serviço de arquivos e use sua URL.
 
 ### Cabeçalho (`header`)
 

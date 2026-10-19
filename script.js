@@ -880,34 +880,17 @@ function openExerciseDetail(exId, workoutTag) {
   const last = getLastLoad(exId);
   const exerciseImage = document.querySelector(".exercise-detail-image");
   const exerciseVideo = document.querySelector(".exercise-detail-video");
-  const gifUrl = getSafeGifUrl(exercise.gifUrl);
   const fallbackImage = "4929985-training-icon-on-white-linear-style-vetor.jpg";
   exerciseVideo.pause();
   exerciseVideo.removeAttribute("src");
   exerciseVideo.hidden = true;
   exerciseVideo.onerror = null;
   exerciseImage.hidden = false;
-  if (gifUrl && isVideoMediaUrl(gifUrl)) {
-    exerciseImage.hidden = true;
-    exerciseVideo.muted = true;
-    exerciseVideo.autoplay = true;
-    exerciseVideo.onerror = () => {
-      exerciseVideo.onerror = null;
-      exerciseVideo.pause();
-      exerciseVideo.hidden = true;
-      exerciseImage.hidden = false;
-      exerciseImage.src = fallbackImage;
-    };
-    exerciseVideo.src = gifUrl;
-    exerciseVideo.hidden = false;
-    exerciseVideo.load();
-  } else {
-    exerciseImage.src = gifUrl || fallbackImage;
-    exerciseImage.onerror = () => {
-      exerciseImage.onerror = null;
-      exerciseImage.src = fallbackImage;
-    };
-  }
+  exerciseImage.src = fallbackImage;
+  exerciseImage.onerror = () => {
+    exerciseImage.onerror = null;
+    exerciseImage.src = fallbackImage;
+  };
   document.getElementById("exercise-detail-workout").textContent =
     getWorkoutName(workoutTag).toLocaleUpperCase("pt-BR");
   document.getElementById("exercise-detail-title").textContent = exercise.name;
@@ -933,6 +916,37 @@ function openExerciseDetail(exId, workoutTag) {
     : "Ainda sem registro para este exercício.";
   updateExerciseMetric();
   switchScreen("exercise");
+  resolveExerciseMedia(exercise)
+    .then((media) => {
+      if (
+        !media.url ||
+        currentExercise?.exId !== exId ||
+        currentExercise?.workoutTag !== workoutTag
+      ) {
+        return;
+      }
+      if (media.isVideo) {
+        exerciseImage.hidden = true;
+        exerciseVideo.muted = true;
+        exerciseVideo.autoplay = true;
+        exerciseVideo.onerror = () => {
+          exerciseVideo.onerror = null;
+          exerciseVideo.pause();
+          exerciseVideo.hidden = true;
+          exerciseImage.hidden = false;
+          exerciseImage.src = fallbackImage;
+        };
+        exerciseVideo.src = media.url;
+        exerciseVideo.hidden = false;
+        exerciseVideo.load();
+      } else {
+        exerciseImage.src = media.url;
+      }
+    })
+    .catch((error) => {
+      console.error("Não foi possível carregar a mídia do exercício", error);
+      showToast("Não foi possível carregar a mídia salva");
+    });
 }
 function updateExerciseMetric() {
   const unit = document.getElementById("exercise-metric").value;
@@ -1345,6 +1359,120 @@ function getSafeGifUrl(value) {
     return "";
   }
 }
+const LOCAL_MEDIA_DB_NAME = "meutreino_media_v1";
+const LOCAL_MEDIA_STORE_NAME = "exercise_media";
+let localMediaDbPromise = null;
+const localMediaUrls = new Map();
+function openLocalMediaDb() {
+  if (!window.indexedDB) {
+    return Promise.reject(
+      new Error("Este navegador não oferece suporte ao armazenamento de arquivos."),
+    );
+  }
+  if (!localMediaDbPromise) {
+    localMediaDbPromise = new Promise((resolve, reject) => {
+      const request = window.indexedDB.open(LOCAL_MEDIA_DB_NAME, 1);
+      request.onupgradeneeded = () => {
+        request.result.createObjectStore(LOCAL_MEDIA_STORE_NAME, {
+          keyPath: "id",
+        });
+      };
+      request.onsuccess = () => resolve(request.result);
+      request.onerror = () => reject(request.error);
+      request.onblocked = () =>
+        reject(new Error("O armazenamento de arquivos está bloqueado."));
+    }).catch((error) => {
+      localMediaDbPromise = null;
+      throw error;
+    });
+  }
+  return localMediaDbPromise;
+}
+async function saveLocalMedia(file, id) {
+  const db = await openLocalMediaDb();
+  return new Promise((resolve, reject) => {
+    const transaction = db.transaction(LOCAL_MEDIA_STORE_NAME, "readwrite");
+    const request = transaction.objectStore(LOCAL_MEDIA_STORE_NAME).put({
+      id,
+      blob: file,
+      name: file.name,
+      type: getMediaType(file),
+    });
+    transaction.oncomplete = () => resolve();
+    request.onerror = () => reject(request.error);
+    transaction.onerror = () =>
+      reject(transaction.error || new Error("Falha ao salvar o arquivo."));
+    transaction.onabort = () =>
+      reject(transaction.error || new Error("O salvamento do arquivo foi cancelado."));
+  });
+}
+async function getLocalMedia(id) {
+  const db = await openLocalMediaDb();
+  return new Promise((resolve, reject) => {
+    const request = db
+      .transaction(LOCAL_MEDIA_STORE_NAME, "readonly")
+      .objectStore(LOCAL_MEDIA_STORE_NAME)
+      .get(id);
+    request.onsuccess = () => resolve(request.result || null);
+    request.onerror = () => reject(request.error);
+  });
+}
+async function deleteLocalMedia(id) {
+  if (!id) return;
+  const db = await openLocalMediaDb();
+  return new Promise((resolve, reject) => {
+    const transaction = db.transaction(LOCAL_MEDIA_STORE_NAME, "readwrite");
+    transaction.objectStore(LOCAL_MEDIA_STORE_NAME).delete(id);
+    transaction.oncomplete = () => resolve();
+    transaction.onerror = () =>
+      reject(transaction.error || new Error("Falha ao remover o arquivo."));
+    transaction.onabort = () =>
+      reject(transaction.error || new Error("A remoção do arquivo foi cancelada."));
+  });
+}
+function getMediaType(file) {
+  if (file.type) return file.type;
+  const extension = file.name.split(".").pop().toLowerCase();
+  return {
+    mp4: "video/mp4",
+    jpg: "image/jpeg",
+    jpeg: "image/jpeg",
+    png: "image/png",
+    gif: "image/gif",
+  }[extension] || "";
+}
+function getSafeMediaFileType(file) {
+  const extension = file.name.split(".").pop().toLowerCase();
+  const allowedTypes = {
+    mp4: ["", "video/mp4"],
+    jpg: ["", "image/jpeg"],
+    jpeg: ["", "image/jpeg"],
+    png: ["", "image/png"],
+    gif: ["", "image/gif"],
+  };
+  return allowedTypes[extension]?.includes(file.type)
+    ? getMediaType(file)
+    : "";
+}
+async function resolveExerciseMedia(exercise) {
+  if (exercise.mediaId) {
+    const media = await getLocalMedia(exercise.mediaId);
+    if (!media) {
+      throw new Error("O arquivo salvo neste navegador não foi encontrado.");
+    }
+    let url = localMediaUrls.get(exercise.mediaId);
+    if (!url) {
+      url = URL.createObjectURL(media.blob);
+      localMediaUrls.set(exercise.mediaId, url);
+    }
+    return { url, isVideo: media.type === "video/mp4" };
+  }
+  const url = getSafeGifUrl(exercise.gifUrl);
+  return {
+    url,
+    isVideo: Boolean(url && isVideoMediaUrl(url)),
+  };
+}
 function isVideoMediaUrl(value) {
   return /\.(mp4|m4v|webm|ogv|mov)$/i.test(new URL(value).pathname);
 }
@@ -1363,41 +1491,68 @@ function renderPredefinedExercises() {
   state.predefinedExercises.forEach((exercise) => {
     const card = document.createElement("article");
     card.className = "predefined-exercise-card";
-    const safeUrl = getSafeGifUrl(exercise.gifUrl);
-    const isVideo = Boolean(safeUrl && isVideoMediaUrl(safeUrl));
-    const preview = document.createElement(isVideo ? "video" : "img");
-    preview.className = isVideo
-      ? "predefined-exercise-video"
-      : "predefined-exercise-gif";
-    preview.setAttribute(
-      "aria-label",
-      (isVideo ? "Vídeo" : "GIF") + " de execução de " + exercise.name,
-    );
-    if (isVideo) {
-      preview.muted = true;
-      preview.loop = true;
-      preview.autoplay = true;
-      preview.playsInline = true;
-      preview.preload = "none";
-    } else {
-      preview.alt = "GIF de execução de " + exercise.name;
-      preview.loading = "lazy";
-    }
     const gifPlaceholder = document.createElement("div");
     gifPlaceholder.className = "predefined-gif-placeholder";
     gifPlaceholder.textContent = "Mídia do exercício não cadastrada.";
-    gifPlaceholder.hidden = Boolean(safeUrl);
-    if (safeUrl) {
-      preview.onerror = () => {
+    const previewWrap = document.createElement("div");
+    previewWrap.className = "predefined-media-wrap";
+    previewWrap.appendChild(gifPlaceholder);
+    resolveExerciseMedia(exercise)
+      .then((media) => {
+        if (!card.isConnected || !media.url) return;
+        const preview = document.createElement(
+          media.isVideo ? "video" : "img",
+        );
+        preview.className = media.isVideo
+          ? "predefined-exercise-video"
+          : "predefined-exercise-gif";
+        preview.setAttribute(
+          "aria-label",
+          (media.isVideo ? "Vídeo" : "Imagem ou GIF") +
+            " de execução de " +
+            exercise.name,
+        );
+        if (media.isVideo) {
+          preview.muted = true;
+          preview.loop = true;
+          preview.autoplay = true;
+          preview.playsInline = true;
+          preview.preload = "none";
+        } else {
+          preview.alt = "Imagem ou GIF de execução de " + exercise.name;
+          preview.loading = "lazy";
+        }
         preview.hidden = true;
-        gifPlaceholder.textContent =
-          "Não foi possível carregar a mídia do exercício.";
-        gifPlaceholder.hidden = false;
-      };
-      preview.src = safeUrl;
-      preview.hidden = false;
-    } else {
-      preview.hidden = true;
+        previewWrap.insertBefore(preview, gifPlaceholder);
+        preview.onerror = () => {
+          preview.hidden = true;
+          gifPlaceholder.textContent =
+            "Não foi possível carregar a mídia do exercício.";
+          gifPlaceholder.hidden = false;
+        };
+        preview.onload = () => {
+          gifPlaceholder.hidden = true;
+          preview.hidden = false;
+        };
+        if (media.isVideo) {
+          preview.onloadeddata = () => {
+            gifPlaceholder.hidden = true;
+            preview.hidden = false;
+          };
+        }
+        preview.src = media.url;
+        if (media.isVideo) preview.load();
+      })
+      .catch((error) => {
+        console.error("Não foi possível carregar a mídia do exercício", error);
+        if (card.isConnected) {
+          gifPlaceholder.textContent =
+            "Não foi possível carregar a mídia salva.";
+          gifPlaceholder.hidden = false;
+        }
+      });
+    if (exercise.mediaId || getSafeGifUrl(exercise.gifUrl)) {
+      gifPlaceholder.hidden = true;
     }
     const content = document.createElement("div");
     content.className = "predefined-exercise-content";
@@ -1428,11 +1583,11 @@ function renderPredefinedExercises() {
     deleteButton.onclick = () => deletePredefinedExercise(exercise.id);
     actions.append(editButton, deleteButton);
     content.append(heading, description, actions);
-    card.append(preview, gifPlaceholder, content);
+    card.append(previewWrap, content);
     container.appendChild(card);
   });
 }
-function deletePredefinedExercise(id) {
+async function deletePredefinedExercise(id) {
   const exercise = state.predefinedExercises.find((item) => item.id === id);
   if (!exercise) return;
   if (
@@ -1456,7 +1611,23 @@ function deletePredefinedExercise(id) {
   renderExerciseList();
   updateHeroCard();
   renderProgressSelect();
-  showToast(exercise.name + " removido do catálogo e dos treinos");
+  let mediaCleanupFailed = false;
+  if (exercise.mediaId) {
+    try {
+      await deleteLocalMedia(exercise.mediaId);
+      const mediaUrl = localMediaUrls.get(exercise.mediaId);
+      if (mediaUrl) URL.revokeObjectURL(mediaUrl);
+      localMediaUrls.delete(exercise.mediaId);
+    } catch (error) {
+      console.error("Não foi possível remover a mídia do exercício", error);
+      mediaCleanupFailed = true;
+    }
+  }
+  showToast(
+    mediaCleanupFailed
+      ? "Exercício removido, mas o arquivo não pôde ser apagado"
+      : exercise.name + " removido do catálogo e dos treinos",
+  );
 }
 // ---------- Home ----------
 function updateHeroCard() {
@@ -1627,6 +1798,11 @@ function openModal(type, id, workoutTag) { // tipos incluem pré-treino, exercí
   document.getElementById("field-weekdays-group").style.display =
     type === "weekdays" ? "block" : "none";
   document.getElementById("field-gif-url").value = "";
+  document.getElementById("field-gif-file").value = "";
+  document.getElementById("field-clear-media").checked = false;
+  document.getElementById("field-media-current").hidden = true;
+  document.getElementById("field-media-hint").textContent =
+    "Formatos aceitos: MP4, JPG, PNG ou GIF. O arquivo fica salvo apenas neste navegador e dispositivo.";
   document.getElementById("field-description").value = "";
   document.getElementById("field-series").value = "";
   document.getElementById("field-reps").value = "";
@@ -1672,6 +1848,9 @@ function openModal(type, id, workoutTag) { // tipos incluem pré-treino, exercí
     document.getElementById("field-gif-url").value = item
       ? item.gifUrl || ""
       : "";
+    document.getElementById("field-media-current").hidden = !(
+      item && (item.mediaId || item.gifUrl)
+    );
     document.getElementById("field-description").value = item
       ? item.description || ""
       : "";
@@ -1710,7 +1889,7 @@ function renderDaySchedulePicker() {
 function closeModal() {
   document.getElementById("modal-overlay").classList.remove("show");
 }
-function saveModal() {
+async function saveModal() {
   const { type, id } = modalState;
 
   if (type === "weekdays") {
@@ -1786,8 +1965,12 @@ function saveModal() {
   } else if (type === "predefined") {
     const series = Number(document.getElementById("field-series").value);
     const reps = document.getElementById("field-reps").value.trim();
+    const fileInput = document.getElementById("field-gif-file");
+    const file = fileInput.files[0] || null;
+    const clearMedia = document.getElementById("field-clear-media").checked;
     const gifUrlValue = document.getElementById("field-gif-url").value.trim();
-    const gifUrl = getSafeGifUrl(gifUrlValue);
+    let gifUrl = "";
+    let mediaId = null;
     const description = document
       .getElementById("field-description")
       .value.trim();
@@ -1799,20 +1982,47 @@ function saveModal() {
       showToast("Informe as repetições");
       return;
     }
-    if (gifUrlValue && !gifUrl) {
-      showToast("Informe uma URL de GIF válida usando http ou https");
+    if (file && !getSafeMediaFileType(file)) {
+      showToast("Escolha um arquivo MP4, JPG, PNG ou GIF válido");
       return;
     }
-    if (id) {
-      const item = state.predefinedExercises.find(
-        (exercise) => exercise.id === id,
-      );
-      if (!item) {
-        showToast("Esse exercício não está mais no catálogo");
-        closeModal();
+    if (!file && gifUrlValue && !clearMedia) {
+      gifUrl = getSafeGifUrl(gifUrlValue);
+      if (!gifUrl) {
+        showToast("Informe uma URL válida usando http ou https");
         return;
       }
-      Object.assign(item, { name, series, reps, gifUrl, description });
+    }
+    const item = id
+      ? state.predefinedExercises.find((exercise) => exercise.id === id)
+      : null;
+    if (id && !item) {
+      showToast("Esse exercício não está mais no catálogo");
+      closeModal();
+      return;
+    }
+    const oldMediaId = item?.mediaId || null;
+    if (file) {
+      mediaId = generateId();
+      try {
+        await saveLocalMedia(file, mediaId);
+      } catch (error) {
+        console.error("Não foi possível salvar o arquivo escolhido", error);
+        showToast(
+          "Não foi possível salvar o arquivo. Verifique o espaço disponível no navegador.",
+        );
+        return;
+      }
+    } else if (
+      !gifUrlValue &&
+      item?.mediaId &&
+      !clearMedia
+    ) {
+      mediaId = item.mediaId;
+      gifUrl = item.gifUrl || "";
+    }
+    if (id) {
+      Object.assign(item, { name, series, reps, gifUrl, mediaId, description });
       state.workoutOrder.forEach((tag) => {
         state.workouts[tag] = (state.workouts[tag] || []).map((exercise) =>
           exercise.id === id ? { ...item } : exercise,
@@ -1825,6 +2035,7 @@ function saveModal() {
         series,
         reps,
         gifUrl,
+        mediaId,
         description,
       };
       state.predefinedExercises.push(newExercise);
@@ -1834,6 +2045,17 @@ function saveModal() {
     renderExerciseList();
     updateHeroCard();
     renderProgressSelect();
+    if (oldMediaId && oldMediaId !== mediaId) {
+      try {
+        await deleteLocalMedia(oldMediaId);
+        const oldUrl = localMediaUrls.get(oldMediaId);
+        if (oldUrl) URL.revokeObjectURL(oldUrl);
+        localMediaUrls.delete(oldMediaId);
+      } catch (error) {
+        console.error("Não foi possível remover a mídia substituída", error);
+        showToast("Mídia salva, mas o arquivo anterior não pôde ser removido");
+      }
+    }
   }
   closeModal();
   showToast("Salvo com sucesso");
@@ -1901,6 +2123,12 @@ function isiOS() {
 })();
 
 // ---------- Init ----------
+document.getElementById("field-gif-file").addEventListener("change", (event) => {
+  const file = event.target.files[0];
+  document.getElementById("field-media-hint").textContent = file
+    ? file.name + " — salvo apenas neste navegador e dispositivo."
+    : "Formatos aceitos: MP4, JPG, PNG ou GIF. O arquivo fica salvo apenas neste navegador e dispositivo.";
+});
 document.getElementById("date-badge").textContent = todayLabel();
 renderChecklist("home-checklist", "home-progress-fill", "home-progress-label");
 renderChecklist(
