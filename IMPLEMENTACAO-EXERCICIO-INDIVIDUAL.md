@@ -1,6 +1,6 @@
 # Registro individual de exercícios
 
-Este documento explica a implementação da tela individual de exercício no app Meu Treino. Cada exercício pode ser aberto, registrado e concluído separadamente, sem concluir os outros exercícios do treino.
+Este documento explica a implementação da tela individual de exercício no app KinoraFit. Cada exercício pode ser aberto, registrado e concluído separadamente, sem concluir os outros exercícios do treino.
 
 ## Fluxo para quem usa o app
 

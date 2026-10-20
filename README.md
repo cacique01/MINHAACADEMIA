@@ -1,4 +1,4 @@
-# Meu Treino
+# KinoraFit
 
 Aplicação web em português para organizar treinos, acompanhar a rotina pré-treino e registrar a evolução das cargas. A interface é uma página única: as abas inferiores alternam telas dentro do próprio `index.html`, sem navegar para outros arquivos HTML.
 
@@ -46,7 +46,7 @@ Depois, abra `http://localhost:8000` no navegador. Servir por HTTP/HTTPS também
 
 O atributo `rel` descreve a relação do recurso indicado em `href` com o documento:
 
-- `rel="manifest"` fornece os metadados de instalação da aplicação. Neste projeto, o manifesto está embutido em uma URL `data:` codificada em Base64, em vez de ser um arquivo separado. Ele define o nome “Meu Treino”, o nome curto “Treino”, a URL inicial relativa (`.`), modo de exibição `standalone` e cores de fundo/tema.
+- `rel="manifest"` fornece os metadados de instalação da aplicação. Neste projeto, o manifesto está embutido em uma URL `data:` codificada em Base64, em vez de ser um arquivo separado. Ele define o nome “KinoraFit”, a URL inicial relativa (`.`), modo de exibição `standalone` e cores de fundo/tema.
 - `rel="apple-touch-icon"` fornece o ícone para a tela inicial de dispositivos Apple compatíveis. A imagem é igualmente incorporada como `data:image/png;base64,...`.
 - `rel="icon"` define o favicon do navegador; também usa uma imagem PNG embutida. Os dois ícones são dados no próprio HTML e não dependem da imagem JPG listada no diretório.
 - `rel="preconnect"` pede ao navegador que antecipe a conexão com `fonts.googleapis.com` e `fonts.gstatic.com`, reduzindo a espera pelas fontes. O `crossorigin` no segundo endereço prepara a conexão cross-origin necessária para o carregamento dos arquivos de fonte.
@@ -75,7 +75,7 @@ No catálogo de exercícios, é possível escolher um arquivo MP4, JPG/JPEG, PNG
 
 `<header class="topbar">` é a barra superior fixa/aderente definida no CSS. Contém:
 
-- a marca “MEU TREINO” e um SVG inline representando um halter;
+- a marca “KINORAFIT” e um SVG inline representando um halter;
 - `#date-badge`, preenchido pelo JavaScript com o dia da semana e a data atual.
 
 O HTML usa `header` como estrutura semântica de cabeçalho da aplicação; as classes controlam sua aparência, e o ID `date-badge` conecta o elemento à rotina de inicialização em `script.js`.
@@ -190,7 +190,7 @@ O `box-sizing: border-box` global (`*`) faz com que padding e borda sejam inclu�
 
 - `#app` centraliza a aplicação, limita sua largura a 480 px e usa Flexbox em coluna para distribuir cabeçalho, conteúdo e navegação. Sua posição relativa também serve de referência para elementos posicionados.
 - `header.topbar` tem gradiente escuro, borda inferior e `position: sticky` no topo, com `z-index: 10` para permanecer acima do conteúdo durante a rolagem. Flexbox alinha marca e data em lados opostos. O padding superior soma a margem visual à área segura do dispositivo.
-- `.brand`, `.brand-mark` e `.brand-title` organizam a marca. O símbolo tem fundo laranja e tamanho fixo; o `span` no título realça “TREINO” em laranja.
+- `.brand`, `.brand-mark` e `.brand-title` organizam a marca. O símbolo tem fundo laranja e tamanho fixo; o `span` no título realça “FIT” em laranja.
 - `main` ocupa o espaço restante (`flex: 1`), aplica margens internas e reserva espaço inferior para a navegação fixa e a área segura do aparelho.
 - `.screen` oculta as telas por padrão e aplica uma animação de entrada. `.screen.active` torna visível a seção selecionada. `@keyframes fadein` anima opacidade e deslocamento vertical.
 

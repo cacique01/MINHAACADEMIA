@@ -1,6 +1,6 @@
 # Documentação detalhada do código
 
-Este documento explica a estrutura e o funcionamento do HTML, JavaScript e CSS do **Meu Treino**. As referências usam os números de linha dos arquivos no momento da criação deste guia. Linhas em branco separam blocos; chaves `{}` delimitam elementos HTML, objetos JavaScript, funções e regras CSS. Quando uma estrutura é repetida (por exemplo, cada exercício padrão ou cada botão da navegação), a explicação identifica os campos e o comportamento comuns a todas as repetições.
+Este documento explica a estrutura e o funcionamento do HTML, JavaScript e CSS do **KinoraFit**. As referências usam os números de linha dos arquivos no momento da criação deste guia. Linhas em branco separam blocos; chaves `{}` delimitam elementos HTML, objetos JavaScript, funções e regras CSS. Quando uma estrutura é repetida (por exemplo, cada exercício padrão ou cada botão da navegação), a explicação identifica os campos e o comportamento comuns a todas as repetições.
 
 ## Visão geral
 
@@ -41,7 +41,7 @@ O HTML tem 326 linhas. Elementos de abertura criam controles e contêineres; seu
 |---|---|
 | 24 | Abre o corpo visível da página. |
 | 25 | Cria `#app`, contêiner geral cuja largura e disposição são controladas pelo CSS. |
-| 27–35 | Cria o cabeçalho fixo/aderente. A marca é composta de um ícone SVG e o texto “MEU TREINO”. |
+| 27–35 | Cria o cabeçalho fixo/aderente. A marca é composta de um ícone SVG e o texto “KINORAFIT”. |
 | 28–32 | Define a marca. O `<svg>` e `<path>` desenham o halter; `viewBox`, `stroke` e `stroke-width` controlam a área e o traço. |
 | 33 | Reserva `#date-badge`; o JavaScript escreve ali o dia e a data atual. O estilo inline controla tipografia, cor e capitalização. |
 | 35 | Fecha o cabeçalho. |
