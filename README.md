@@ -137,12 +137,14 @@ O HTML usa `header` como estrutura semântica de cabeçalho da aplicação; as c
 
 ### Navegação inferior (`nav`)
 
-`<nav class="bottom-nav">` contém quatro botões: Início, Treino, Pré-treino e Progresso. Cada botão associa:
+`<nav class="bottom-nav">` mantém os três destinos principais: Início, Treino e Temporizador. Progresso, Rotina e Pré-definidos ficam no menu aberto pelo ícone da marca (`#brand-menu-toggle`), no cabeçalho. Cada opção associa:
 
 - `data-screen="nome"` à tela correspondente;
 - `onclick="switchScreen('nome')"` à função que alterna a tela;
 - a classe `active` ao estado visual selecionado;
 - um SVG inline como ícone.
+
+O menu da marca fecha ao escolher uma tela, clicar fora dele ou pressionar Escape.
 
 Essa navegação não abre outras páginas HTML: troca as seções dentro do mesmo documento e atualiza o botão ativo. O botão principal do cartão inicial usa `goToWorkoutFromHome()` para abrir Treino.
 
@@ -245,7 +247,7 @@ O `box-sizing: border-box` global (`*`) faz com que padding e borda sejam inclu�
 #### 9. Navegação fixa, toast e banner de instalação
 
 - `nav.bottom-nav` fica fixa no rodapé da viewport, limitada à largura do app. Tem fundo escuro semitransparente, desfoque de fundo, borda superior e `z-index: 20`; o padding inferior inclui a área segura do dispositivo.
-- `.nav-btn` divide igualmente o espaço, empilhando ícone e rótulo. `.nav-btn.active` e seu SVG ficam laranja para refletir a tela atual.
+- `.nav-btn` divide igualmente o espaço da navegação inferior, empilhando ícone e rótulo. `.brand-menu` apresenta as outras telas em uma lista compacta ancorada ao ícone da marca; `.brand-menu-btn.active` destaca a tela selecionada.
 - `.toast` é uma cápsula fixa acima da navegação, centralizada horizontalmente. Começa transparente e deslocada para baixo; `.toast.show` restaura opacidade e posição com transição. Seu `z-index: 40` a mantém acima dos conteúdos.
 - `.install-banner` fica oculto por padrão; `.install-banner.show` o exibe. O contorno laranja o diferencia do conteúdo. Título, explicação e botão têm tamanhos próprios, e `.dismiss-x` posiciona visualmente o controle de fechar no topo do banner.
 
@@ -357,7 +359,7 @@ Durante a execução do script, antes da inicialização da interface, compara-s
 
 #### 5. Navegação entre telas
 
-- `switchScreen(name)` remove `active` de todas as `.screen`, ativa `#screen-NOME`, atualiza os botões `.nav-btn` com base em `data-screen` e rola a página ao topo.
+- `switchScreen(name)` remove `active` de todas as `.screen`, ativa `#screen-NOME`, atualiza os botões `.nav-btn` e `.brand-menu-btn` com base em `data-screen`, fecha o menu da marca e rola a página ao topo.
 - `goToWorkoutFromHome()` abre a tela `workout` a partir do cartão da tela inicial e sincroniza o botão da navegação.
 
 Essas funções alteram classes no documento atual. Não fazem requisições nem carregam outras páginas HTML.

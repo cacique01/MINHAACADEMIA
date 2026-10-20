@@ -479,18 +479,30 @@ function switchScreen(name) {
   document.getElementById("screen-" + name).classList.add("active");
   document.body.classList.toggle("exercise-detail-open", name === "exercise");
   document
-    .querySelectorAll(".nav-btn")
+    .querySelectorAll(".nav-btn, .brand-menu-btn")
     .forEach((b) => b.classList.toggle("active", b.dataset.screen === name));
+  closeBrandMenu();
   window.scrollTo(0, 0);
 }
 function goToWorkoutFromHome() {
   switchScreen("workout");
-  document
-    .querySelectorAll(".nav-btn")
-    .forEach((b) =>
-      b.classList.toggle("active", b.dataset.screen === "workout"),
-    );
 }
+function toggleBrandMenu() {
+  const menu = document.getElementById("brand-menu");
+  const toggle = document.getElementById("brand-menu-toggle");
+  menu.hidden = !menu.hidden;
+  toggle.setAttribute("aria-expanded", String(!menu.hidden));
+}
+function closeBrandMenu() {
+  document.getElementById("brand-menu").hidden = true;
+  document.getElementById("brand-menu-toggle").setAttribute("aria-expanded", "false");
+}
+document.addEventListener("click", (event) => {
+  if (!event.target.closest(".brand-navigation")) closeBrandMenu();
+});
+document.addEventListener("keydown", (event) => {
+  if (event.key === "Escape") closeBrandMenu();
+});
 
 // ---------- Manage mode ----------
 let manageModePretreino = false;

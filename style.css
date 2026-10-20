@@ -46,7 +46,7 @@ header.topbar {
   border-bottom: 1px solid var(--gray-line);
   position: sticky;
   top: 0;
-  z-index: 10;
+  z-index: 30;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -56,14 +56,52 @@ header.topbar {
   align-items: center;
   gap: 10px;
 }
+.brand-navigation { position: relative; }
 .brand-mark {
   width: 34px; height: 34px;
   border-radius: 8px;
   background: var(--orange);
   display: flex; align-items: center; justify-content: center;
   flex-shrink: 0;
+  padding: 0;
+  border: 0;
+  cursor: pointer;
 }
 .brand-mark svg { width: 20px; height: 20px; }
+.brand-mark:focus-visible { outline: 2px solid var(--white); outline-offset: 3px; }
+.brand-menu {
+  position: absolute;
+  top: calc(100% + 12px);
+  left: 0;
+  width: min(220px, calc(100vw - 36px));
+  padding: 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  background: var(--card-2);
+  border: 1px solid var(--gray-line);
+  border-radius: 12px;
+  box-shadow: 0 12px 30px rgba(0,0,0,0.45);
+}
+.brand-menu[hidden] { display: none; }
+.brand-menu-btn {
+  min-height: 42px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 10px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--gray);
+  font-size: 13px;
+  font-weight: 600;
+  text-align: left;
+  cursor: pointer;
+}
+.brand-menu-btn svg { width: 19px; height: 19px; flex-shrink: 0; }
+.brand-menu-btn.active { background: rgba(255,106,0,0.12); color: var(--orange); }
+.brand-menu-btn:focus-visible { outline: 2px solid var(--orange); outline-offset: -2px; }
 .brand-title { font-size: 22px; line-height: 1; text-transform: uppercase; }
 .brand-title span { color: var(--orange); }
 main {
